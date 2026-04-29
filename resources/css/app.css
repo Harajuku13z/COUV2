@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme inline {
+    --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+
+    --color-brand-50: var(--tenant-brand-50);
+    --color-brand-100: var(--tenant-brand-100);
+    --color-brand-200: var(--tenant-brand-200);
+    --color-brand-300: var(--tenant-brand-300);
+    --color-brand-400: var(--tenant-brand-400);
+    --color-brand-500: var(--tenant-brand-500);
+    --color-brand-600: var(--tenant-brand-600);
+    --color-brand-700: var(--tenant-brand-700);
+    --color-brand-800: var(--tenant-brand-800);
+    --color-brand-900: var(--tenant-brand-900);
+    --color-accent-500: var(--tenant-accent-500);
+    --color-surface-50: var(--tenant-surface-50);
+    --color-surface-100: var(--tenant-surface-100);
+    --color-surface-900: var(--tenant-surface-900);
+}
+
+:root {
+    --tenant-brand-50: #f3f7f5;
+    --tenant-brand-100: #dce8e1;
+    --tenant-brand-200: #bdd2c6;
+    --tenant-brand-300: #96b3a4;
+    --tenant-brand-400: #6a8f7f;
+    --tenant-brand-500: #4f7465;
+    --tenant-brand-600: #3e5c51;
+    --tenant-brand-700: #324941;
+    --tenant-brand-800: #2a3c35;
+    --tenant-brand-900: #23312d;
+    --tenant-accent-500: #d97706;
+    --tenant-surface-50: #fcfcfb;
+    --tenant-surface-100: #f3f2ef;
+    --tenant-surface-900: #1b1e1c;
+}
+
+body {
+    @apply bg-surface-50 text-slate-900 antialiased;
+    font-family: var(--font-sans);
+}
