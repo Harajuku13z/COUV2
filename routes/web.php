@@ -15,8 +15,8 @@ foreach (config('tenancy.central_domains', []) as $domain) {
     Route::domain($domain)->middleware('web')->group(function (): void {
         Route::get('/', function (InstallationState $installationState) {
             return $installationState->isConfigured()
-                ? redirect()->route('admin.dashboard')
-                : redirect()->route('onboarding');
+                ? redirect('/admin')
+                : redirect('/onboarding');
         })->name('central.dashboard');
 
         Route::get('/healthz', function () {
