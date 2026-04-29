@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 
 class LeadService implements LeadServiceInterface
 {
-    public function createFromRequest(Request $request, Page $page): Lead
+    public function createFromRequest(Request $request, ?Page $page = null): Lead
     {
         $data = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
@@ -32,17 +32,19 @@ class LeadService implements LeadServiceInterface
 
         $lead = Lead::query()->create([
             ...$data,
-            'page_id' => $page->id,
-            'city_id' => $page->city_id,
-            'service_id' => $page->service_id,
-            'source_url' => $request->fullUrl(),
-            'keyword_targeted' => $page->seoKeywords()->where('type', 'primary')->value('keyword'),
+            'page_id' => $page?->id,
+            'city_id' => $page?->city_id,
+            'service_id' => $page?->service_id,
+            'source_url' => $request->input('source_url', $request->fullUrl()),
+            'keyword_targeted' => $page?->seoKeywords()->where('type', 'primary')->value('keyword'),
             'ip_hash' => hash('sha256', (string) $request->ip()),
             'uploaded_files' => [],
             'status' => 'new',
         ]);
 
-        $page->increment('lead_count');
+        if ($page !== null) {
+            $page->increment('lead_count');
+        }
 
         $jobClass = 'App\\Jobs\\SendLeadNotificationJob';
 
