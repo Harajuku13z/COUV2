@@ -8,16 +8,15 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\PageController;
 use App\Livewire\Onboarding\OnboardingWizard;
+use App\Support\InstallationState;
 use Illuminate\Support\Facades\Route;
 
 foreach (config('tenancy.central_domains', []) as $domain) {
     Route::domain($domain)->middleware('web')->group(function (): void {
-        Route::get('/', function () {
-            return response()->json([
-                'application' => config('app.name'),
-                'context' => 'central',
-                'status' => 'ok',
-            ]);
+        Route::get('/', function (InstallationState $installationState) {
+            return $installationState->isConfigured()
+                ? redirect()->route('admin.dashboard')
+                : redirect()->route('onboarding');
         })->name('central.dashboard');
 
         Route::get('/healthz', function () {

@@ -8,6 +8,12 @@ NPM_BIN="${NPM_BIN:-npm}"
 
 cd "$APP_DIR"
 
+if [ ! -f ".env" ]; then
+  echo "Fichier .env introuvable."
+  echo "Genere-le d abord avec: bash deploy/scripts/configure-env.sh"
+  exit 1
+fi
+
 echo "==> Pull latest code"
 git fetch origin
 git checkout main
@@ -24,6 +30,7 @@ fi
 
 echo "==> Laravel optimization"
 "$PHP_BIN" artisan storage:link || true
+"$PHP_BIN" artisan key:generate --force --no-interaction || true
 "$PHP_BIN" artisan migrate --force
 "$PHP_BIN" artisan optimize:clear
 "$PHP_BIN" artisan config:cache
