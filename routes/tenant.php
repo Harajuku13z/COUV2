@@ -29,8 +29,6 @@ Route::middleware([
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    Route::get('/', [HomeController::class, 'index'])->name('tenant.home');
-
     Route::get('/healthz', function () {
         return response()->json([
             'status' => 'healthy',
@@ -38,16 +36,21 @@ Route::middleware([
         ]);
     })->name('tenant.health');
 
-    Route::post('/leads/devis', [LeadPublicController::class, 'storeDevis'])->name('public.leads.devis');
-    Route::post('/leads/urgence', [LeadPublicController::class, 'storeUrgence'])->name('public.leads.urgence');
-    Route::post('/leads/contact', [LeadPublicController::class, 'storeContact'])->name('public.leads.contact');
+    Route::middleware(['throttle.lead-form', 'verify.honeypot', 'validate.file-upload'])->group(function (): void {
+        Route::post('/leads/devis', [LeadPublicController::class, 'storeDevis'])->name('public.leads.devis');
+        Route::post('/leads/urgence', [LeadPublicController::class, 'storeUrgence'])->name('public.leads.urgence');
+        Route::post('/leads/contact', [LeadPublicController::class, 'storeContact'])->name('public.leads.contact');
+    });
 
-    Route::get('/blog', [BlogController::class, 'index'])->name('public.blog.index');
-    Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('public.blog.show');
-    Route::get('/contact', [ContactController::class, 'show'])->name('public.contact');
-    Route::get('/devis', [ContactController::class, 'devis'])->name('public.devis');
-    Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('public.seo.sitemap');
-    Route::get('/robots.txt', [SeoController::class, 'robots'])->name('public.seo.robots');
+    Route::middleware('cache.public.pages')->group(function (): void {
+        Route::get('/', [HomeController::class, 'index'])->name('tenant.home');
+        Route::get('/blog', [BlogController::class, 'index'])->name('public.blog.index');
+        Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('public.blog.show');
+        Route::get('/contact', [ContactController::class, 'show'])->name('public.contact');
+        Route::get('/devis', [ContactController::class, 'devis'])->name('public.devis');
+        Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('public.seo.sitemap');
+        Route::get('/robots.txt', [SeoController::class, 'robots'])->name('public.seo.robots');
 
-    Route::get('/{slug}', [LocalPageController::class, 'show'])->name('public.pages.show');
+        Route::get('/{slug}', [LocalPageController::class, 'show'])->name('public.pages.show');
+    });
 });

@@ -10,13 +10,16 @@ use App\Http\Requests\StoreContactRequest;
 use App\Http\Requests\StoreDevisRequest;
 use App\Http\Requests\StoreUrgenceRequest;
 use App\Models\Page;
+use App\Services\ImageOptimizationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
 
 class LeadPublicController extends Controller
 {
-    public function __construct(private readonly LeadServiceInterface $leadService)
+    public function __construct(
+        private readonly LeadServiceInterface $leadService,
+        private readonly ImageOptimizationService $imageOptimizationService,
+    )
     {
     }
 
@@ -28,11 +31,24 @@ class LeadPublicController extends Controller
         $lead = $this->leadService->createFromRequest($request, $page);
 
         foreach ($request->file('uploaded_files', []) as $file) {
-            $path = 'leads/'.uniqid('lead_', true).'.jpg';
-            $image = Image::read($file->getRealPath())->scaleDown(width: 1600);
-            Storage::disk('public')->put($path, (string) $image->encode());
             $files = $lead->uploaded_files ?? [];
-            $files[] = Storage::disk('public')->url($path);
+
+            if (str_starts_with((string) $file->getMimeType(), 'image/')) {
+                $optimized = $this->imageOptimizationService->optimizePhoto($file);
+                $files[] = [
+                    'url' => Storage::disk('public')->url($optimized['jpeg']),
+                    'webp_url' => Storage::disk('public')->url($optimized['webp']),
+                    'placeholder_url' => Storage::disk('public')->url($optimized['placeholder']),
+                ];
+            } else {
+                $path = $file->store('leads', 'public');
+                $files[] = [
+                    'url' => Storage::disk('public')->url($path),
+                    'webp_url' => null,
+                    'placeholder_url' => null,
+                ];
+            }
+
             $lead->update(['uploaded_files' => $files]);
         }
 

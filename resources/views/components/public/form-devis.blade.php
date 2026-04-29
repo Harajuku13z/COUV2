@@ -2,6 +2,7 @@
     @csrf
     <input type="hidden" name="page_id" value="{{ $page->id ?? '' }}">
     <input type="hidden" name="source_url" value="{{ url()->current() }}">
+    <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off">
     <input type="text" name="company_name" class="hidden" tabindex="-1" autocomplete="off">
     <div class="grid gap-4 md:grid-cols-2">
         <input name="name" class="rounded-2xl border border-slate-300 px-4 py-3" placeholder="Nom*" required>

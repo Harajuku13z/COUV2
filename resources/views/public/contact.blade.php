@@ -39,6 +39,7 @@
             @csrf
             <input type="hidden" name="page_id" value="{{ $featuredPage?->id }}">
             <input type="hidden" name="source_url" value="{{ url()->current() }}">
+            <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off">
             <input type="text" name="company_name" class="hidden" tabindex="-1" autocomplete="off">
             <input name="name" class="w-full rounded-2xl border border-slate-300 px-4 py-3" placeholder="Nom*" required>
             <input name="phone" class="w-full rounded-2xl border border-slate-300 px-4 py-3" placeholder="Telephone*" required>

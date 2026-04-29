@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Throwable;
 
 class RefreshWeatherDataJob implements ShouldQueue
@@ -33,6 +34,7 @@ class RefreshWeatherDataJob implements ShouldQueue
     public function handle(WeatherServiceInterface $weatherService): void
     {
         $weatherService->refreshAllActiveCities();
+        Cache::flush();
     }
 
     public function backoff(): array

@@ -8,12 +8,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Media;
 use App\Models\Setting;
+use App\Services\ImageOptimizationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
 
 class BrandingController extends Controller
 {
+    public function __construct(private readonly ImageOptimizationService $imageOptimizationService)
+    {
+    }
+
     public function edit()
     {
         $company = Company::query()->first();
@@ -44,14 +48,12 @@ class BrandingController extends Controller
         $request->validate(['logo' => ['required', 'image', 'max:5120']]);
         $company = Company::query()->firstOrFail();
         $file = $request->file('logo');
-        $path = 'branding/logo-'.time().'.'.$file->getClientOriginalExtension();
-        $image = Image::read($file->getRealPath())->scaleDown(width: 400);
-        Storage::disk('public')->put($path, (string) $image->encode());
+        $paths = $this->imageOptimizationService->optimizeLogo($file);
         Media::query()->updateOrCreate(
             ['mediable_type' => Company::class, 'mediable_id' => $company->id, 'type' => 'logo'],
-            ['disk' => 'public', 'path' => $path, 'url' => Storage::disk('public')->url($path)]
+            ['disk' => 'public', 'path' => $paths['full'], 'url' => Storage::disk('public')->url($paths['full'])]
         );
-        $company->update(['logo_path' => $path]);
+        $company->update(['logo_path' => $paths['full']]);
 
         return back()->with('status', 'Logo uploaded.');
     }
@@ -61,12 +63,10 @@ class BrandingController extends Controller
         $request->validate(['favicon' => ['required', 'file', 'mimes:ico,png', 'max:500']]);
         $company = Company::query()->firstOrFail();
         $file = $request->file('favicon');
-        $path = 'branding/favicon-'.time().'.png';
-        $image = Image::read($file->getRealPath())->scaleDown(width: 64, height: 64);
-        Storage::disk('public')->put($path, (string) $image->encode());
+        $paths = $this->imageOptimizationService->optimizeLogo($file);
         Media::query()->updateOrCreate(
             ['mediable_type' => Company::class, 'mediable_id' => $company->id, 'type' => 'favicon'],
-            ['disk' => 'public', 'path' => $path, 'url' => Storage::disk('public')->url($path)]
+            ['disk' => 'public', 'path' => $paths['favicon'], 'url' => Storage::disk('public')->url($paths['favicon'])]
         );
 
         return back()->with('status', 'Favicon uploaded.');

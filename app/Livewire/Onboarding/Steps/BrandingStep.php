@@ -7,6 +7,7 @@ namespace App\Livewire\Onboarding\Steps;
 use App\Models\Company;
 use App\Models\Media;
 use App\Models\Setting;
+use App\Services\ImageOptimizationService;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\WithFileUploads;
 use Spatie\LivewireWizard\Components\StepComponent;
@@ -68,19 +69,19 @@ class BrandingStep extends StepComponent
             ]);
 
             if ($this->logo !== null) {
-                $path = $this->logo->store('branding', 'public');
+                $paths = app(ImageOptimizationService::class)->optimizeLogo($this->logo);
                 Media::query()->updateOrCreate(
                     ['mediable_type' => Company::class, 'mediable_id' => $company->id, 'type' => 'logo'],
-                    ['disk' => 'public', 'path' => $path, 'url' => Storage::disk('public')->url($path)]
+                    ['disk' => 'public', 'path' => $paths['full'], 'url' => Storage::disk('public')->url($paths['full'])]
                 );
-                $company->update(['logo_path' => $path]);
+                $company->update(['logo_path' => $paths['full']]);
             }
 
             if ($this->favicon !== null) {
-                $path = $this->favicon->store('branding', 'public');
+                $paths = app(ImageOptimizationService::class)->optimizeLogo($this->favicon);
                 Media::query()->updateOrCreate(
                     ['mediable_type' => Company::class, 'mediable_id' => $company->id, 'type' => 'favicon'],
-                    ['disk' => 'public', 'path' => $path, 'url' => Storage::disk('public')->url($path)]
+                    ['disk' => 'public', 'path' => $paths['favicon'], 'url' => Storage::disk('public')->url($paths['favicon'])]
                 );
             }
         }

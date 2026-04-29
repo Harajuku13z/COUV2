@@ -8,6 +8,7 @@ use App\Contracts\AiContentGeneratorServiceInterface;
 use App\Jobs\Concerns\LogsFailures;
 use App\Models\Company;
 use App\Models\Page;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -45,6 +46,7 @@ class GenerateLocalPageJob implements ShouldQueue
         }
 
         $generatorService->generatePage($page, $company);
+        Cache::flush();
 
         BuildInternalLinksJob::dispatch($page->id);
     }
