@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\BrandingController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\PageController;
+use App\Http\Controllers\SetupController;
 use App\Livewire\Onboarding\OnboardingWizard;
 use App\Support\InstallationState;
 use Illuminate\Support\Facades\Route;
@@ -25,7 +26,7 @@ foreach (config('tenancy.central_domains', []) as $domain) {
             ]);
         })->name('central.health');
 
-        Route::get('/onboarding', OnboardingWizard::class)->name('onboarding');
+        Route::get('/onboarding', SetupController::class)->name('onboarding');
 
         Route::prefix('admin')->as('admin.')->group(function (): void {
             Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
