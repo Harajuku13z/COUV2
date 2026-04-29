@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Livewire\Onboarding\OnboardingWizard;
 use App\Support\InstallationState;
-use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Schema;
 
 class SetupController extends Controller
@@ -14,7 +12,7 @@ class SetupController extends Controller
     public function __invoke(InstallationState $installationState)
     {
         if ($this->hasOnboardingTables()) {
-            return app(OnboardingWizard::class)();
+            return view('setup.wizard');
         }
 
         return view('setup.index', [
