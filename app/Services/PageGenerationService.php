@@ -17,35 +17,7 @@ class PageGenerationService implements PageGenerationServiceInterface
 {
     public function generatePageTypesForCity(City $city, Service $service): array
     {
-        $types = ['service_city', 'devis'];
-
-        if ($service->is_emergency) {
-            $types[] = 'urgence';
-        }
-
-        if ($city->population > 5000) {
-            $types[] = 'city';
-        }
-
-        if (WeatherEvent::query()->where('city_id', $city->id)->whereDate('event_date', '>=', now()->subDays(7))->exists()) {
-            $types[] = 'meteo';
-        }
-
-        $pages = [];
-
-        foreach (array_unique($types) as $type) {
-            $slug = $this->buildSlug($type, $city, $service);
-
-            $pages[] = Page::query()->firstOrCreate(
-                ['slug' => $slug],
-                [
-                    'city_id' => $city->id,
-                    'service_id' => $service->id,
-                    'page_type' => $type,
-                    'status' => 'draft',
-                ]
-            );
-        }
+        $pages = $this->createPageEntries($city, $service);
 
         $jobClass = 'App\\Jobs\\GenerateLocalPageJob';
 
@@ -69,7 +41,7 @@ class PageGenerationService implements PageGenerationServiceInterface
 
         foreach ($cities as $city) {
             foreach ($services as $service) {
-                $pages = $this->generatePageTypesForCity($city, $service);
+                $pages = $this->createPageEntries($city, $service);
                 $pageCount += count($pages);
 
                 if (class_exists($jobClass)) {
@@ -110,5 +82,40 @@ class PageGenerationService implements PageGenerationServiceInterface
             'meteo' => Str::slug("meteo {$service->slug} {$city->slug}"),
             default => Str::slug("{$service->slug} {$city->slug}"),
         };
+    }
+
+    private function createPageEntries(City $city, Service $service): array
+    {
+        $types = ['service_city', 'devis'];
+
+        if ($service->is_emergency) {
+            $types[] = 'urgence';
+        }
+
+        if ($city->population > 5000) {
+            $types[] = 'city';
+        }
+
+        if (WeatherEvent::query()->where('city_id', $city->id)->whereDate('event_date', '>=', now()->subDays(7))->exists()) {
+            $types[] = 'meteo';
+        }
+
+        $pages = [];
+
+        foreach (array_unique($types) as $type) {
+            $slug = $this->buildSlug($type, $city, $service);
+
+            $pages[] = Page::query()->firstOrCreate(
+                ['slug' => $slug],
+                [
+                    'city_id' => $city->id,
+                    'service_id' => $service->id,
+                    'page_type' => $type,
+                    'status' => 'draft',
+                ]
+            );
+        }
+
+        return $pages;
     }
 }

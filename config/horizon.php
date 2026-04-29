@@ -101,6 +101,10 @@ return [
         'redis:imports' => 180,
         'redis:seo' => 180,
         'redis:ai' => 300,
+        'redis:serp' => 120,
+        'redis:ai-generation' => 300,
+        'redis:maintenance' => 180,
+        'redis:notifications' => 60,
     ],
 
     /*
@@ -229,7 +233,7 @@ return [
         ],
         'supervisor-seo' => [
             'connection' => 'redis',
-            'queue' => ['seo'],
+            'queue' => ['seo', 'serp'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 4,
@@ -243,7 +247,7 @@ return [
         ],
         'supervisor-ai' => [
             'connection' => 'redis',
-            'queue' => ['ai'],
+            'queue' => ['ai', 'ai-generation'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 4,
@@ -252,6 +256,19 @@ return [
             'memory' => 768,
             'tries' => 3,
             'timeout' => 600,
+            'backoff' => [30, 120, 600],
+            'nice' => 0,
+        ],
+        'supervisor-maintenance' => [
+            'connection' => 'redis',
+            'queue' => ['maintenance', 'notifications'],
+            'balance' => 'simple',
+            'maxProcesses' => 2,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 256,
+            'tries' => 3,
+            'timeout' => 300,
             'backoff' => [30, 120, 600],
             'nice' => 0,
         ],
@@ -277,6 +294,9 @@ return [
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
+            'supervisor-maintenance' => [
+                'maxProcesses' => 3,
+            ],
         ],
 
         'local' => [
@@ -291,6 +311,9 @@ return [
             ],
             'supervisor-ai' => [
                 'maxProcesses' => 2,
+            ],
+            'supervisor-maintenance' => [
+                'maxProcesses' => 1,
             ],
         ],
     ],
