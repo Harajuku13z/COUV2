@@ -19,7 +19,7 @@ class SeoService implements SeoServiceInterface
         $sitemap = Sitemap::create();
 
         $sitemap->add(
-            Url::create(rtrim(config('app.url'), '/'))
+            Url::create(url('/'))
                 ->setPriority(1.0)
                 ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
         );
@@ -50,7 +50,7 @@ class SeoService implements SeoServiceInterface
             ->get()
             ->each(function (BlogPost $post) use ($sitemap): void {
                 $sitemap->add(
-                    Url::create(rtrim(config('app.url'), '/').'/blog/'.$post->slug)
+                    Url::create(url('blog/'.$post->slug))
                         ->setPriority(0.6)
                         ->setLastModificationDate($post->updated_at ?? now())
                 );
@@ -66,13 +66,13 @@ class SeoService implements SeoServiceInterface
             ->addAllow('/')
             ->addDisallow('/admin/')
             ->addDisallow('/api/')
-            ->addSitemap(rtrim(config('app.url'), '/').'/storage/sitemap.xml')
+            ->addSitemap(url('/sitemap.xml'))
             ->generate();
     }
 
     public function generateCanonicalUrl(Page $page): string
     {
-        return rtrim(config('app.url'), '/').'/'.$page->slug;
+        return url($page->slug);
     }
 
     public function generateOpenGraphData(Page $page, Company $company): array
@@ -81,7 +81,7 @@ class SeoService implements SeoServiceInterface
             'title' => $page->content?->meta_title ?? $page->slug,
             'description' => $page->content?->meta_description ?? $company->offer_text,
             'url' => $this->generateCanonicalUrl($page),
-            'image' => $company->logo_path,
+            'image' => $company->logo_path ? asset('storage/'.$company->logo_path) : null,
             'site_name' => config('app.name'),
         ];
     }
@@ -92,7 +92,7 @@ class SeoService implements SeoServiceInterface
             'card' => 'summary_large_image',
             'title' => $page->content?->meta_title ?? $page->slug,
             'description' => $page->content?->meta_description ?? $company->offer_text,
-            'image' => $company->logo_path,
+            'image' => $company->logo_path ? asset('storage/'.$company->logo_path) : null,
         ];
     }
 
@@ -103,13 +103,13 @@ class SeoService implements SeoServiceInterface
                 '@type' => 'ListItem',
                 'position' => 1,
                 'name' => 'Accueil',
-                'item' => rtrim(config('app.url'), '/'),
+                'item' => url('/'),
             ],
             $page->service ? [
                 '@type' => 'ListItem',
                 'position' => 2,
                 'name' => $page->service->name,
-                'item' => rtrim(config('app.url'), '/').'/services/'.$page->service->slug,
+                'item' => url('/'),
             ] : null,
             $page->city ? [
                 '@type' => 'ListItem',

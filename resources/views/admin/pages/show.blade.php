@@ -1,4 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+
+@section('title', 'Detail page')
 
 @section('content')
 <section class="mx-auto max-w-5xl px-4 py-12">

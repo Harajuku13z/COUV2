@@ -7,11 +7,12 @@
         <nav class="hidden gap-6 text-sm md:flex">
             <a href="{{ url('/') }}#services">Services</a>
             <a href="{{ url('/') }}#zones">Zones</a>
+            <a href="{{ route('public.blog.index') }}">Blog</a>
             <a href="{{ url('/') }}#faq">FAQ</a>
         </nav>
         <div class="flex items-center gap-3">
             <a href="tel:{{ $headerCompany?->phone }}" class="hidden text-sm md:block">{{ $headerCompany?->phone }}</a>
-            <a href="{{ url('/devis') }}" class="rounded-full px-4 py-2 text-sm font-medium text-white" style="background: var(--brand-primary)">Devis Gratuit</a>
+            <a href="{{ route('public.devis') }}" class="rounded-full px-4 py-2 text-sm font-medium text-white" style="background: var(--brand-primary)">Devis Gratuit</a>
         </div>
     </div>
 </header>

@@ -11,7 +11,8 @@
             <p class="font-semibold">Services</p>
             <div class="mt-3 space-y-2 text-sm">
                 @foreach($footerServices as $service)
-                    <a class="block text-slate-400" href="{{ url($service->slug) }}">{{ $service->name }}</a>
+                    @php($serviceSlug = \App\Models\Page::query()->published()->where('service_id', $service->id)->value('slug'))
+                    <a class="block text-slate-400" href="{{ $serviceSlug ? url($serviceSlug) : url('/') }}">{{ $service->name }}</a>
                 @endforeach
             </div>
         </div>
@@ -19,7 +20,8 @@
             <p class="font-semibold">Zone d'intervention</p>
             <div class="mt-3 space-y-2 text-sm">
                 @foreach($footerCities as $city)
-                    <a class="block text-slate-400" href="{{ url($city->slug) }}">{{ $city->name }}</a>
+                    @php($citySlug = \App\Models\Page::query()->published()->where('city_id', $city->id)->value('slug'))
+                    <a class="block text-slate-400" href="{{ $citySlug ? url($citySlug) : route('public.contact') }}">{{ $city->name }}</a>
                 @endforeach
             </div>
         </div>

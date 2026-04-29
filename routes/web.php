@@ -30,6 +30,8 @@ foreach (config('tenancy.central_domains', []) as $domain) {
 
         Route::prefix('admin')->as('admin.')->group(function (): void {
             Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+            Route::post('/dashboard/sitemap', [DashboardController::class, 'regenerateSitemap'])->name('dashboard.sitemap');
+            Route::post('/dashboard/weather', [DashboardController::class, 'refreshWeather'])->name('dashboard.weather');
 
             Route::get('/pages', [PageController::class, 'index'])->name('pages.index');
             Route::post('/pages/generate-all', [PageController::class, 'generateAll'])->name('pages.generate-all');
