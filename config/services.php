@@ -35,4 +35,30 @@ return [
         ],
     ],
 
+    'geo_gouv' => [
+        'base_url' => 'https://geo.api.gouv.fr',
+        'timeout' => 20,
+    ],
+
+    'serpapi' => [
+        'key' => env('SERPAPI_KEY'),
+        'base_url' => env('SERPAPI_BASE_URL', 'https://serpapi.com/search'),
+        'timeout' => (int) env('SERPAPI_TIMEOUT', 60),
+        'google_domain' => 'google.fr',
+        'gl' => 'fr',
+        'hl' => 'fr',
+        'no_cache' => false,
+    ],
+
+    'openai_local' => [
+        'default_model' => env('OPENAI_DEFAULT_MODEL', 'gpt-4o-mini'),
+        'timeout' => (int) env('OPENAI_REQUEST_TIMEOUT', 120),
+    ],
+
+    'openweather' => [
+        'key' => env('OPENWEATHER_API_KEY'),
+        'base_url' => env('OPENWEATHER_BASE_URL', 'https://api.openweathermap.org'),
+        'timeout' => (int) env('OPENWEATHER_TIMEOUT', 30),
+    ],
+
 ];
