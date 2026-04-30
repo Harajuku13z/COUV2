@@ -1,27 +1,38 @@
-<div class="mx-auto max-w-6xl px-4 pb-12">
-    <div class="rounded-[2.5rem] border border-white/70 bg-white/85 p-6 shadow-[0_18px_70px_rgba(35,49,45,0.08)] backdrop-blur md:p-8">
-        <p class="text-xs font-semibold uppercase tracking-[0.28em]" style="color: var(--brand-primary)">Etape 6 sur 6</p>
-        <h2 class="mt-3 text-3xl font-semibold md:text-4xl">Lancement</h2>
-        <p class="mt-3 max-w-3xl text-base leading-7 text-slate-600">Tout est pret. On peut maintenant lancer l import des zones et la generation initiale des pages.</p>
-
-        <div class="mt-6 h-2 overflow-hidden rounded-full bg-slate-100">
-            <div class="h-full w-full rounded-full" style="background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent))"></div>
-        </div>
-
-        <div class="mt-8 grid gap-4 md:grid-cols-2">
-            <div class="rounded-[2rem] bg-slate-950 p-6 text-white shadow-sm">
-                <p class="text-sm uppercase tracking-[0.24em] text-slate-400">Pages estimees</p>
-                <p class="mt-3 text-4xl font-semibold">{{ $this->estimatedPages }}</p>
+<div class="container-xl pb-5">
+    <section class="setup-panel p-4 p-lg-5">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <div class="setup-kicker">Etape 6 sur 6</div>
+                <h2 class="setup-section-title mt-3 mb-2">Lancement</h2>
+                <p class="text-secondary mb-0" style="line-height: 1.85;">
+                    Tout est pret. On peut maintenant lancer l import des zones et la generation initiale des pages.
+                </p>
             </div>
-            <div class="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                <p class="text-sm uppercase tracking-[0.24em] text-slate-500">Cout OpenAI estime</p>
-                <p class="mt-3 text-4xl font-semibold">{{ $this->estimatedCost }}</p>
+            <span class="setup-pill">Publication initiale</span>
+        </div>
+
+        <div class="setup-progress mt-4">
+            <div class="setup-progress-bar" style="width: 100%"></div>
+        </div>
+
+        <div class="row g-4 mt-1">
+            <div class="col-md-6">
+                <div class="setup-dark-card h-100">
+                    <div class="text-uppercase small opacity-75 fw-semibold">Pages estimees</div>
+                    <div class="display-4 fw-bold mt-3">{{ $this->estimatedPages }}</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="setup-sidecard p-4 h-100">
+                    <div class="text-uppercase small text-secondary fw-semibold">Cout OpenAI estime</div>
+                    <div class="display-4 fw-bold mt-3">{{ $this->estimatedCost }}</div>
+                </div>
             </div>
         </div>
 
-        <div class="mt-8 flex items-center justify-between">
-            <button wire:click="previousStep" class="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold">Retour</button>
-            <button wire:click="launch" class="rounded-full px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-400/20 transition hover:-translate-y-0.5" style="background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary))">Lancer la generation</button>
+        <div class="d-flex flex-column flex-sm-row justify-content-between gap-3 mt-4">
+            <button wire:click="previousStep" type="button" class="btn btn-outline-secondary setup-btn-secondary">Retour</button>
+            <button wire:click="launch" type="button" class="btn setup-btn-primary">Lancer la generation</button>
         </div>
-    </div>
+    </section>
 </div>

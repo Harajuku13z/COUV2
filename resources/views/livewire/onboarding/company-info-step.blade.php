@@ -1,91 +1,92 @@
-<div class="mx-auto max-w-6xl px-4 pb-12">
-    <div class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <section class="rounded-[2.5rem] border border-white/70 bg-white/85 p-6 shadow-[0_18px_70px_rgba(35,49,45,0.08)] backdrop-blur md:p-8">
-            <div class="flex items-center justify-between gap-4">
-                <div>
-                    <p class="text-xs font-semibold uppercase tracking-[0.28em]" style="color: var(--brand-primary)">Etape 1 sur 6</p>
-                    <h2 class="mt-3 text-3xl font-semibold md:text-4xl">Informations entreprise</h2>
+<div class="container-xl pb-5">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <section class="setup-panel p-4 p-lg-5 h-100">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <div class="setup-kicker">Etape 1 sur 6</div>
+                        <h2 class="setup-section-title mt-3 mb-0">Informations entreprise</h2>
+                    </div>
+                    <span class="setup-pill">Base identitaire</span>
                 </div>
-                <div class="hidden rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-600 md:block">Base identitaire</div>
-            </div>
 
-            <div class="mt-6 h-2 overflow-hidden rounded-full bg-slate-100">
-                <div class="h-full w-[16.666%] rounded-full" style="background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent))"></div>
-            </div>
+                <div class="setup-progress mt-4">
+                    <div class="setup-progress-bar" style="width: 16.666%"></div>
+                </div>
 
-            <div class="mt-8 grid gap-4 md:grid-cols-2">
-                <label class="space-y-2">
-                    <span class="text-sm font-medium text-slate-700">Nom de l entreprise</span>
-                    <input wire:model="name" class="w-full rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3.5 outline-none transition focus:border-brand-400 focus:bg-white" placeholder="Ex. Les Toits de l Ouest">
-                </label>
-                <label class="space-y-2">
-                    <span class="text-sm font-medium text-slate-700">SIRET</span>
-                    <input wire:model="siret" class="w-full rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3.5 outline-none transition focus:border-brand-400 focus:bg-white" placeholder="14 chiffres">
-                </label>
-                <label class="space-y-2">
-                    <span class="text-sm font-medium text-slate-700">Activite principale</span>
-                    <input wire:model="activity_main" class="w-full rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3.5 outline-none transition focus:border-brand-400 focus:bg-white" placeholder="Ex. Renovation de toiture, depannage fuite">
-                </label>
-                <label class="space-y-2">
-                    <span class="text-sm font-medium text-slate-700">Type de metier</span>
-                    <select wire:model="activity_type" class="w-full rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3.5 outline-none transition focus:border-brand-400 focus:bg-white">
-            @foreach(['couvreur','plombier','peintre','electricien','elagueur','facadier','custom'] as $type)
-                <option value="{{ $type }}">{{ $type }}</option>
-            @endforeach
-                    </select>
-                </label>
-                <label class="space-y-2">
-                    <span class="text-sm font-medium text-slate-700">Telephone</span>
-                    <input wire:model="phone" class="w-full rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3.5 outline-none transition focus:border-brand-400 focus:bg-white" placeholder="06 00 00 00 00">
-                </label>
-                <label class="space-y-2">
-                    <span class="text-sm font-medium text-slate-700">Email</span>
-                    <input wire:model="email" class="w-full rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3.5 outline-none transition focus:border-brand-400 focus:bg-white" placeholder="contact@exemple.fr">
-                </label>
-                <label class="space-y-2 md:col-span-2">
-                    <span class="text-sm font-medium text-slate-700">Adresse</span>
-                    <input wire:model="address" class="w-full rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3.5 outline-none transition focus:border-brand-400 focus:bg-white" placeholder="12 rue des Artisans">
-                </label>
-                <label class="space-y-2">
-                    <span class="text-sm font-medium text-slate-700">Ville</span>
-                    <input wire:model="city" class="w-full rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3.5 outline-none transition focus:border-brand-400 focus:bg-white" placeholder="Nantes">
-                </label>
-                <label class="space-y-2">
-                    <span class="text-sm font-medium text-slate-700">Code postal</span>
-                    <input wire:model="postal_code" class="w-full rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3.5 outline-none transition focus:border-brand-400 focus:bg-white" placeholder="44000">
-                </label>
-            </div>
+                <div class="row g-4 mt-1">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">Nom de l entreprise</label>
+                        <input wire:model="name" class="form-control setup-form-control" placeholder="Ex. Les Toits de l Ouest">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">SIRET</label>
+                        <input wire:model="siret" class="form-control setup-form-control" placeholder="14 chiffres">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">Activite principale</label>
+                        <input wire:model="activity_main" class="form-control setup-form-control" placeholder="Ex. Renovation de toiture, depannage fuite">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">Type de metier</label>
+                        <select wire:model="activity_type" class="form-select setup-form-select">
+                            @foreach(['couvreur', 'plombier', 'peintre', 'electricien', 'elagueur', 'facadier', 'custom'] as $type)
+                                <option value="{{ $type }}">{{ ucfirst($type) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">Telephone</label>
+                        <input wire:model="phone" class="form-control setup-form-control" placeholder="06 00 00 00 00">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">Email</label>
+                        <input wire:model="email" class="form-control setup-form-control" placeholder="contact@exemple.fr">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold text-secondary">Adresse</label>
+                        <input wire:model="address" class="form-control setup-form-control" placeholder="12 rue des Artisans">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">Ville</label>
+                        <input wire:model="city" class="form-control setup-form-control" placeholder="Nantes">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">Code postal</label>
+                        <input wire:model="postal_code" class="form-control setup-form-control" placeholder="44000">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold text-secondary">Promesse commerciale</label>
+                        <textarea wire:model="offer_text" rows="5" class="form-control setup-form-control" placeholder="Ex. Interventions rapides, devis detaille sous 2h et accompagnement local sur mesure."></textarea>
+                    </div>
+                </div>
 
-            <label class="mt-5 block space-y-2">
-                <span class="text-sm font-medium text-slate-700">Promesse commerciale</span>
-                <textarea wire:model="offer_text" rows="5" class="w-full rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-4 outline-none transition focus:border-brand-400 focus:bg-white" placeholder="Ex. Interventions rapides, devis detaille sous 2h et accompagnement local sur mesure."></textarea>
-            </label>
+                <div class="d-flex justify-content-end mt-4">
+                    <button wire:click="saveAndContinue" type="button" class="btn setup-btn-primary">Continuer</button>
+                </div>
+            </section>
+        </div>
 
-            <div class="mt-8 flex justify-end">
-                <button wire:click="saveAndContinue" class="rounded-full px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-400/20 transition hover:-translate-y-0.5" style="background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary))">Continuer</button>
-            </div>
-        </section>
-
-        <aside class="space-y-6">
-            <div class="rounded-[2.5rem] bg-slate-950 p-6 text-slate-100 shadow-[0_18px_70px_rgba(35,49,45,0.14)] md:p-8">
-                <p class="text-xs uppercase tracking-[0.28em] text-slate-400">Pourquoi cette etape</p>
-                <h3 class="mt-3 text-2xl font-semibold">On fixe la colonne vertebrale du site</h3>
-                <p class="mt-4 text-sm leading-7 text-slate-300">
-                    Ces informations servent a ton identite publique, a la tonalite des pages, au schema local business et a la coherence de tous les contenus qui seront generes ensuite.
+        <div class="col-lg-4">
+            <div class="setup-dark-card mb-4">
+                <div class="text-uppercase small opacity-75 fw-semibold">Pourquoi cette etape</div>
+                <h3 class="h2 fw-bold mt-3">On fixe la colonne vertebrale du site</h3>
+                <p class="mt-3 mb-0 opacity-75" style="line-height: 1.9;">
+                    Ces informations servent a ton identite publique, au schema local business et a la coherence de tous les contenus qui seront generes ensuite.
                 </p>
-                <div class="mt-6 space-y-3 text-sm">
-                    <div class="rounded-[1.4rem] bg-white/5 px-4 py-3">Nom + metier : base du positionnement local</div>
-                    <div class="rounded-[1.4rem] bg-white/5 px-4 py-3">Telephone + email : canaux de conversion immediats</div>
-                    <div class="rounded-[1.4rem] bg-white/5 px-4 py-3">Promesse : fil rouge du copywriting futur</div>
+                <div class="mt-4 d-grid gap-2">
+                    <div class="rounded-4 px-3 py-3 bg-white bg-opacity-10">Nom + metier : base du positionnement local</div>
+                    <div class="rounded-4 px-3 py-3 bg-white bg-opacity-10">Telephone + email : conversion immediate</div>
+                    <div class="rounded-4 px-3 py-3 bg-white bg-opacity-10">Promesse : fil rouge du copywriting</div>
                 </div>
             </div>
 
-            <div class="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-sm">
-                <p class="text-sm font-semibold text-slate-900">Conseil de remplissage</p>
-                <p class="mt-3 text-sm leading-7 text-slate-600">
-                    Sois precis sur le coeur d activite. Une formule concrete comme “depannage fuite toiture et renovation couverture” donnera de meilleurs contenus qu un libelle trop generique.
+            <div class="setup-sidecard p-4">
+                <div class="fw-bold mb-2">Conseil de remplissage</div>
+                <p class="text-secondary mb-0" style="line-height: 1.85;">
+                    Sois precis sur le coeur d activite. Une formule concrete donne ensuite des pages plus credibles et mieux ciblees.
                 </p>
             </div>
-        </aside>
+        </div>
     </div>
 </div>

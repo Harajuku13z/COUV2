@@ -1,40 +1,75 @@
-<div class="mx-auto max-w-6xl px-4 pb-12">
-    <div class="rounded-[2.5rem] border border-white/70 bg-white/85 p-6 shadow-[0_18px_70px_rgba(35,49,45,0.08)] backdrop-blur md:p-8">
-        <p class="text-xs font-semibold uppercase tracking-[0.28em]" style="color: var(--brand-primary)">Etape 5 sur 6</p>
-        <h2 class="mt-3 text-3xl font-semibold md:text-4xl">Cles API et automatisation</h2>
-
-        <div class="mt-6 h-2 overflow-hidden rounded-full bg-slate-100">
-            <div class="h-full w-[83.333%] rounded-full" style="background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent))"></div>
+<div class="container-xl pb-5">
+    <section class="setup-panel p-4 p-lg-5">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <div class="setup-kicker">Etape 5 sur 6</div>
+                <h2 class="setup-section-title mt-3 mb-0">Cles API et automatisation</h2>
+            </div>
+            <span class="setup-pill">Integrations</span>
         </div>
 
-        <div class="mt-8 grid gap-6 lg:grid-cols-[1fr_320px]">
-            <div class="space-y-4">
-                <input wire:model="openai_api_key" class="w-full rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3.5" placeholder="OpenAI API key">
-                <input wire:model="serpapi_key" class="w-full rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3.5" placeholder="SerpAPI key">
-                <input wire:model="openweather_api_key" class="w-full rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-3.5" placeholder="OpenWeather API key">
-                <div class="grid gap-3 sm:grid-cols-3 text-sm">
-                    <div class="rounded-[1.25rem] px-4 py-3 {{ $openai_valid ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-50 text-slate-500' }}">OpenAI · {{ $openai_valid ? 'valide' : 'a tester' }}</div>
-                    <div class="rounded-[1.25rem] px-4 py-3 {{ $serpapi_valid ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-50 text-slate-500' }}">SerpAPI · {{ $serpapi_valid ? 'valide' : 'a tester' }}</div>
-                    <div class="rounded-[1.25rem] px-4 py-3 {{ $openweather_valid ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-50 text-slate-500' }}">Weather · {{ $openweather_valid ? 'valide' : 'a tester' }}</div>
+        <div class="setup-progress mt-4">
+            <div class="setup-progress-bar" style="width: 83.333%"></div>
+        </div>
+
+        <div class="row g-4 mt-1">
+            <div class="col-lg-8">
+                <div class="row g-4">
+                    <div class="col-12">
+                        <label class="form-label fw-semibold text-secondary">OpenAI API key</label>
+                        <input wire:model="openai_api_key" class="form-control setup-form-control" placeholder="sk-...">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold text-secondary">SerpAPI key</label>
+                        <input wire:model="serpapi_key" class="form-control setup-form-control" placeholder="Ta cle SerpAPI">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold text-secondary">OpenWeather API key</label>
+                        <input wire:model="openweather_api_key" class="form-control setup-form-control" placeholder="Ta cle meteo">
+                    </div>
+                    <div class="col-12">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="setup-info-card h-100 {{ $openai_valid ? 'border border-success-subtle bg-success-subtle' : '' }}">
+                                    <div class="fw-bold">OpenAI</div>
+                                    <div class="text-secondary">{{ $openai_valid ? 'Cle validee' : 'A tester' }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="setup-info-card h-100 {{ $serpapi_valid ? 'border border-success-subtle bg-success-subtle' : '' }}">
+                                    <div class="fw-bold">SerpAPI</div>
+                                    <div class="text-secondary">{{ $serpapi_valid ? 'Cle validee' : 'A tester' }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="setup-info-card h-100 {{ $openweather_valid ? 'border border-success-subtle bg-success-subtle' : '' }}">
+                                    <div class="fw-bold">Weather</div>
+                                    <div class="text-secondary">{{ $openweather_valid ? 'Cle validee' : 'A tester' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <aside class="rounded-[2rem] bg-slate-950 p-6 text-slate-100">
-                <p class="text-xs uppercase tracking-[0.24em] text-slate-400">A quoi servent ces cles</p>
-                <div class="mt-4 space-y-4 text-sm leading-7 text-slate-300">
-                    <p><strong class="text-white">OpenAI</strong> pour la generation et la personnalisation des contenus.</p>
-                    <p><strong class="text-white">SerpAPI</strong> pour lire les signaux SEO et la concurrence locale.</p>
-                    <p><strong class="text-white">Weather</strong> pour contextualiser les pages et les alertes meteo.</p>
+            <div class="col-lg-4">
+                <div class="setup-dark-card h-100">
+                    <div class="text-uppercase small opacity-75 fw-semibold">A quoi servent ces cles</div>
+                    <div class="mt-3 d-grid gap-3">
+                        <div><strong>OpenAI</strong><br><span class="opacity-75">Pour la generation et la personnalisation des contenus.</span></div>
+                        <div><strong>SerpAPI</strong><br><span class="opacity-75">Pour suivre les signaux SEO et la concurrence locale.</span></div>
+                        <div><strong>Weather</strong><br><span class="opacity-75">Pour contextualiser les pages et les alertes meteo.</span></div>
+                    </div>
                 </div>
-            </aside>
-        </div>
-
-        <div class="mt-8 flex items-center justify-between">
-            <button wire:click="previousStep" class="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold">Retour</button>
-            <div class="flex gap-3">
-                <button wire:click="testKeys" class="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold">Tester les cles</button>
-                <button wire:click="saveAndContinue" class="rounded-full px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-400/20 transition hover:-translate-y-0.5" style="background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary))">Continuer</button>
             </div>
         </div>
-    </div>
+
+        <div class="d-flex flex-column flex-sm-row justify-content-between gap-3 mt-4">
+            <button wire:click="previousStep" type="button" class="btn btn-outline-secondary setup-btn-secondary">Retour</button>
+            <div class="d-flex flex-column flex-sm-row gap-3">
+                <button wire:click="testKeys" type="button" class="btn btn-outline-dark setup-btn-secondary">Tester les cles</button>
+                <button wire:click="saveAndContinue" type="button" class="btn setup-btn-primary">Continuer</button>
+            </div>
+        </div>
+    </section>
 </div>
