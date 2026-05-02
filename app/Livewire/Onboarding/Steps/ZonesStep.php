@@ -43,6 +43,10 @@ class ZonesStep extends StepComponent
 
     public function importAndContinue(): void
     {
+        if ($this->selected_departments === [] && $this->selected_department_option !== '') {
+            $this->addSelectedDepartment();
+        }
+
         $validated = $this->validate([
             'selected_departments' => ['required', 'array', 'min:1'],
             'selected_departments.*.code' => ['required', 'string', 'max:3'],

@@ -1,5 +1,5 @@
 <div class="container-xl pb-5">
-    <section class="setup-panel p-4 p-lg-5">
+    <form wire:submit="importAndContinue" class="setup-panel p-4 p-lg-5">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
             <div>
                 <div class="setup-kicker">Etape 2 sur 6</div>
@@ -11,6 +11,17 @@
         <div class="setup-progress mt-4">
             <div class="setup-progress-bar" style="width: 33.333%"></div>
         </div>
+
+        @if ($errors->any())
+            <div class="alert alert-danger border-0 rounded-4 mt-4 mb-0">
+                <div class="fw-bold mb-2">Certaines informations sont a corriger avant de continuer.</div>
+                <ul class="mb-0 ps-3">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
         <div class="row g-4 mt-1">
             <div class="col-lg-8">
@@ -51,6 +62,7 @@
                     <div class="col-12">
                         <label class="form-label fw-semibold text-secondary">Communes prioritaires</label>
                         <textarea wire:model="priority_cities" rows="5" class="form-control setup-form-control" placeholder="Nantes, Saint-Herblain, Reze, Orvault..."></textarea>
+                        @error('priority_cities') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-12">
                         <div class="setup-info-card d-flex justify-content-between align-items-center">
@@ -74,7 +86,7 @@
 
         <div class="d-flex flex-column flex-sm-row justify-content-between gap-3 mt-4">
             <button wire:click="previousStep" type="button" class="btn btn-outline-secondary setup-btn-secondary">Retour</button>
-            <button wire:click="importAndContinue" type="button" class="btn setup-btn-primary">Importer et continuer</button>
+            <button type="submit" class="btn setup-btn-primary">Importer et continuer</button>
         </div>
-    </section>
+    </form>
 </div>
