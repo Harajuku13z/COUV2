@@ -28,22 +28,34 @@
                 <div class="row g-4">
                     <div class="col-12">
                         <label class="form-label fw-semibold text-secondary">Departements cibles</label>
-                        <div class="row g-2 align-items-stretch">
-                            <div class="col-sm-9">
-                                <select wire:model="selected_department_option" class="form-select setup-form-select">
-                                    <option value="">Choisir un departement</option>
-                                    @foreach ($available_departments as $department)
-                                        <option value="{{ $department['code'] }}">{{ $department['code'] }} - {{ $department['name'] }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-sm-3 d-grid">
-                                <button wire:click="addSelectedDepartment" type="button" class="btn btn-dark rounded-4 fw-semibold">+ Ajouter</button>
-                            </div>
+                        <div class="d-grid gap-2">
+                            @foreach ($department_rows as $index => $departmentCode)
+                                <div class="row g-2 align-items-stretch">
+                                    <div class="col-sm-10">
+                                        <select wire:model="department_rows.{{ $index }}" class="form-select setup-form-select">
+                                            <option value="">Choisir un departement</option>
+                                            @foreach ($available_departments as $department)
+                                                <option value="{{ $department['code'] }}">{{ $department['code'] }} - {{ $department['name'] }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('department_rows.'.$index) <div class="text-danger small mt-2">{{ $message }}</div> @enderror
+                                    </div>
+                                    <div class="col-sm-2 d-grid">
+                                        <button wire:click="removeDepartmentRow({{ $index }})" type="button" class="btn btn-outline-secondary rounded-4 fw-semibold">
+                                            {{ count($department_rows) === 1 ? 'Vider' : 'Retirer' }}
+                                        </button>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
-                        <div class="form-text">Liste officielle des departements via l API geo.api.gouv.fr. Tu peux en ajouter plusieurs.</div>
 
-                        @error('selected_departments')
+                        <div class="d-flex justify-content-start mt-3">
+                            <button wire:click="addDepartmentRow" type="button" class="btn btn-dark rounded-4 fw-semibold">+ Ajouter un departement</button>
+                        </div>
+
+                        <div class="form-text">Liste officielle des departements via l API geo.api.gouv.fr.</div>
+
+                        @error('department_rows')
                             <div class="text-danger small mt-2">{{ $message }}</div>
                         @enderror
 
