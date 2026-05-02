@@ -13,10 +13,12 @@ use Spatie\LivewireWizard\Components\StepComponent;
 
 class ZonesStep extends StepComponent
 {
+    public string $department_code = '';
     public string $selected_department_option = '';
     public array $available_departments = [];
     public array $selected_departments = [];
     public string $priority_cities = '';
+    public int $intervention_radius_km = 0;
 
     public function mount(): void
     {
@@ -34,6 +36,7 @@ class ZonesStep extends StepComponent
             ->values()
             ->all();
 
+        $this->department_code = (string) ($storedDepartmentCodes[0] ?? '');
         $this->priority_cities = (string) (Setting::query()->where('key', 'priority_cities')->value('value') ?? '');
         $this->available_departments = $this->loadDepartmentOptions();
     }
@@ -106,6 +109,7 @@ class ZonesStep extends StepComponent
             $this->selected_departments[] = ['code' => $code, 'name' => $name];
         }
 
+        $this->department_code = (string) ($this->selected_departments[0]['code'] ?? '');
         $this->selected_department_option = '';
         $this->available_departments = $this->loadDepartmentOptions();
     }
@@ -117,6 +121,7 @@ class ZonesStep extends StepComponent
             ->values()
             ->all();
 
+        $this->department_code = (string) ($this->selected_departments[0]['code'] ?? '');
         $this->available_departments = $this->loadDepartmentOptions();
     }
 
