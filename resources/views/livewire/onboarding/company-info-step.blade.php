@@ -1,7 +1,7 @@
 <div class="container-xl pb-5">
     <div class="row g-4">
         <div class="col-lg-8">
-            <section class="setup-panel p-4 p-lg-5 h-100">
+            <form wire:submit="saveAndContinue" class="setup-panel p-4 p-lg-5 h-100">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                     <div>
                         <div class="setup-kicker">Etape 1 sur 6</div>
@@ -14,18 +14,32 @@
                     <div class="setup-progress-bar" style="width: 16.666%"></div>
                 </div>
 
+                @if ($errors->any())
+                    <div class="alert alert-danger border-0 rounded-4 mt-4 mb-0">
+                        <div class="fw-bold mb-2">Certaines informations sont a corriger avant de continuer.</div>
+                        <ul class="mb-0 ps-3">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <div class="row g-4 mt-1">
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-secondary">Nom de l entreprise</label>
                         <input wire:model="name" class="form-control setup-form-control" placeholder="Ex. Les Toits de l Ouest">
+                        @error('name') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-secondary">SIRET</label>
                         <input wire:model="siret" class="form-control setup-form-control" placeholder="14 chiffres">
+                        @error('siret') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-secondary">Activite principale</label>
                         <input wire:model="activity_main" class="form-control setup-form-control" placeholder="Ex. Renovation de toiture, depannage fuite">
+                        @error('activity_main') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-secondary">Type de metier</label>
@@ -34,37 +48,44 @@
                                 <option value="{{ $type }}">{{ ucfirst($type) }}</option>
                             @endforeach
                         </select>
+                        @error('activity_type') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-secondary">Telephone</label>
                         <input wire:model="phone" class="form-control setup-form-control" placeholder="06 00 00 00 00">
+                        @error('phone') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-secondary">Email</label>
                         <input wire:model="email" class="form-control setup-form-control" placeholder="contact@exemple.fr">
+                        @error('email') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-12">
                         <label class="form-label fw-semibold text-secondary">Adresse</label>
                         <input wire:model="address" class="form-control setup-form-control" placeholder="12 rue des Artisans">
+                        @error('address') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-secondary">Ville</label>
                         <input wire:model="city" class="form-control setup-form-control" placeholder="Nantes">
+                        @error('city') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-secondary">Code postal</label>
                         <input wire:model="postal_code" class="form-control setup-form-control" placeholder="44000">
+                        @error('postal_code') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
                     </div>
                     <div class="col-12">
                         <label class="form-label fw-semibold text-secondary">Promesse commerciale</label>
                         <textarea wire:model="offer_text" rows="5" class="form-control setup-form-control" placeholder="Ex. Interventions rapides, devis detaille sous 2h et accompagnement local sur mesure."></textarea>
+                        @error('offer_text') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
                     </div>
                 </div>
 
                 <div class="d-flex justify-content-end mt-4">
-                    <button wire:click="saveAndContinue" type="button" class="btn setup-btn-primary">Continuer</button>
+                    <button type="submit" class="btn setup-btn-primary">Continuer</button>
                 </div>
-            </section>
+            </form>
         </div>
 
         <div class="col-lg-4">
