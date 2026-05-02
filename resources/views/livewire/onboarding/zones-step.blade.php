@@ -40,7 +40,7 @@
                         <input id="department-codes-payload" type="hidden" wire:model.live="department_codes_payload">
 
                         <div class="d-flex justify-content-start mt-3">
-                            <button id="department-add-row" type="button" class="btn btn-dark rounded-4 fw-semibold">+ Ajouter un departement</button>
+                            <button id="department-add-row" onclick="window.departmentBuilderAddRow && window.departmentBuilderAddRow()" type="button" class="btn btn-dark rounded-4 fw-semibold">+ Ajouter un departement</button>
                         </div>
 
                         <div class="form-text">Choisis un ou plusieurs departements. Le systeme importera ensuite toutes les communes de chaque departement choisi.</div>
@@ -79,18 +79,19 @@
 
 <script>
     (() => {
-        const initDepartmentBuilder = () => {
+        window.initDepartmentBuilder = () => {
             const container = document.getElementById('department-builder');
             const addButton = document.getElementById('department-add-row');
             const payloadInput = document.getElementById('department-codes-payload');
 
-            if (!container || !addButton || !payloadInput || container.dataset.initialized === '1') {
+            if (!container || !addButton || !payloadInput) {
                 return;
             }
 
             const options = JSON.parse(container.dataset.options || '[]');
             const selected = JSON.parse(container.dataset.selected || '[]');
-            container.dataset.initialized = '1';
+
+            container.innerHTML = '';
 
             const syncPayload = () => {
                 const codes = Array.from(container.querySelectorAll('select[data-department-row]'))
@@ -152,19 +153,20 @@
                 return row;
             };
 
-            const initialCodes = selected.length > 0 ? selected : [''];
-            initialCodes.forEach((code) => container.appendChild(buildSelect(code)));
-
-            addButton.addEventListener('click', () => {
+            window.departmentBuilderAddRow = () => {
                 container.appendChild(buildSelect(''));
                 syncPayload();
-            });
+            };
+
+            const initialCodes = selected.length > 0 ? selected : [''];
+            initialCodes.forEach((code) => container.appendChild(buildSelect(code)));
 
             syncPayload();
         };
 
-        document.addEventListener('DOMContentLoaded', initDepartmentBuilder);
-        document.addEventListener('livewire:navigated', initDepartmentBuilder);
-        document.addEventListener('livewire:initialized', initDepartmentBuilder);
+        document.addEventListener('DOMContentLoaded', window.initDepartmentBuilder);
+        document.addEventListener('livewire:navigated', window.initDepartmentBuilder);
+        document.addEventListener('livewire:initialized', window.initDepartmentBuilder);
+        setTimeout(() => window.initDepartmentBuilder(), 0);
     })();
 </script>
