@@ -48,13 +48,6 @@
                         @endif
 
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold text-secondary">Rayon d intervention</label>
-                        <div class="setup-info-card h-100">
-                            <input wire:model="intervention_radius_km" type="range" min="10" max="100" class="form-range mt-1">
-                            <div class="fw-semibold text-secondary">{{ $intervention_radius_km }} km</div>
-                        </div>
-                    </div>
                     <div class="col-12">
                         <label class="form-label fw-semibold text-secondary">Communes prioritaires</label>
                         <textarea wire:model="priority_cities" rows="5" class="form-control setup-form-control" placeholder="Nantes, Saint-Herblain, Reze, Orvault..."></textarea>

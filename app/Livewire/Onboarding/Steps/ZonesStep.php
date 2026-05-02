@@ -17,7 +17,6 @@ class ZonesStep extends StepComponent
     public array $available_departments = [];
     public array $selected_departments = [];
     public string $priority_cities = '';
-    public int $intervention_radius_km = 30;
 
     public function mount(): void
     {
@@ -36,7 +35,6 @@ class ZonesStep extends StepComponent
             ->all();
 
         $this->priority_cities = (string) (Setting::query()->where('key', 'priority_cities')->value('value') ?? '');
-        $this->intervention_radius_km = (int) (Setting::query()->where('key', 'intervention_radius_km')->value('value') ?? 30);
         $this->available_departments = $this->loadDepartmentOptions();
     }
 
@@ -47,7 +45,6 @@ class ZonesStep extends StepComponent
             'selected_departments.*.code' => ['required', 'string', 'max:3'],
             'selected_departments.*.name' => ['required', 'string', 'max:255'],
             'priority_cities' => ['nullable', 'string'],
-            'intervention_radius_km' => ['required', 'integer', 'min:10', 'max:100'],
         ]);
 
         $departmentCodes = collect($validated['selected_departments'])
@@ -65,7 +62,7 @@ class ZonesStep extends StepComponent
             ['value' => json_encode($departmentCodes, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), 'group' => 'zones']
         );
         Setting::query()->updateOrCreate(['key' => 'priority_cities'], ['value' => $validated['priority_cities'] ?? '', 'group' => 'zones']);
-        Setting::query()->updateOrCreate(['key' => 'intervention_radius_km'], ['value' => (string) $validated['intervention_radius_km'], 'group' => 'zones']);
+        Setting::query()->where('key', 'intervention_radius_km')->delete();
 
         foreach ($departmentCodes as $departmentCode) {
             ImportDepartmentCitiesJob::dispatch($departmentCode);
