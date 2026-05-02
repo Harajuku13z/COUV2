@@ -91,6 +91,32 @@ class ZonesStep extends StepComponent
         $this->department_rows[] = '';
     }
 
+    public function addSelectedDepartment(): void
+    {
+        $code = trim($this->selected_department_option);
+
+        if ($code === '') {
+            return;
+        }
+
+        if (in_array($code, $this->department_rows, true)) {
+            $this->selected_department_option = '';
+
+            return;
+        }
+
+        $emptyIndex = collect($this->department_rows)->search(fn (mixed $value): bool => trim((string) $value) === '');
+
+        if ($emptyIndex !== false) {
+            $this->department_rows[$emptyIndex] = $code;
+        } else {
+            $this->department_rows[] = $code;
+        }
+
+        $this->selected_department_option = '';
+        $this->syncSelectedDepartmentsFromRows();
+    }
+
     public function removeDepartmentRow(int $index): void
     {
         if (count($this->department_rows) <= 1) {
@@ -101,6 +127,17 @@ class ZonesStep extends StepComponent
         }
 
         $this->syncSelectedDepartmentsFromRows();
+    }
+
+    public function removeDepartment(string $code): void
+    {
+        $index = collect($this->department_rows)->search(fn (mixed $value): bool => trim((string) $value) === trim($code));
+
+        if ($index === false) {
+            return;
+        }
+
+        $this->removeDepartmentRow((int) $index);
     }
 
     public function updatedDepartmentRows(): void
