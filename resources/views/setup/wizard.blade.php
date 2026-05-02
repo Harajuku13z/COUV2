@@ -242,6 +242,98 @@
 
         <livewire:onboarding.onboarding-wizard />
     </main>
+    <script>
+        (() => {
+            const initDepartmentBuilder = () => {
+                const container = document.getElementById('department-builder');
+                const payloadInput = document.getElementById('department-codes-payload');
+
+                if (!container || !payloadInput) {
+                    return;
+                }
+
+                const options = JSON.parse(container.dataset.options || '[]');
+                const selected = JSON.parse(container.dataset.selected || '[]');
+                container.innerHTML = '';
+
+                const syncPayload = () => {
+                    const codes = Array.from(container.querySelectorAll('select[data-department-row]'))
+                        .map((select) => select.value.trim())
+                        .filter((value, index, array) => value !== '' && array.indexOf(value) === index);
+
+                    payloadInput.value = JSON.stringify(codes);
+                    payloadInput.dispatchEvent(new Event('input', { bubbles: true }));
+                };
+
+                const buildSelect = (selectedCode = '') => {
+                    const row = document.createElement('div');
+                    row.className = 'row g-2 align-items-stretch';
+
+                    const selectCol = document.createElement('div');
+                    selectCol.className = 'col-sm-10';
+
+                    const select = document.createElement('select');
+                    select.className = 'form-select setup-form-select';
+                    select.setAttribute('data-department-row', '1');
+
+                    const placeholder = document.createElement('option');
+                    placeholder.value = '';
+                    placeholder.textContent = 'Choisir un departement';
+                    select.appendChild(placeholder);
+
+                    options.forEach((department) => {
+                        const option = document.createElement('option');
+                        option.value = department.code;
+                        option.textContent = `${department.code} - ${department.name}`;
+                        if (department.code === selectedCode) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    });
+
+                    select.addEventListener('change', syncPayload);
+                    selectCol.appendChild(select);
+
+                    const removeCol = document.createElement('div');
+                    removeCol.className = 'col-sm-2 d-grid';
+
+                    const removeButton = document.createElement('button');
+                    removeButton.type = 'button';
+                    removeButton.className = 'btn btn-outline-secondary rounded-4 fw-semibold';
+                    removeButton.textContent = 'Retirer';
+                    removeButton.addEventListener('click', () => {
+                        row.remove();
+                        if (container.querySelectorAll('[data-department-row]').length === 0) {
+                            container.appendChild(buildSelect(''));
+                        }
+                        syncPayload();
+                    });
+
+                    removeCol.appendChild(removeButton);
+                    row.appendChild(selectCol);
+                    row.appendChild(removeCol);
+
+                    return row;
+                };
+
+                window.departmentBuilderAddRow = () => {
+                    container.appendChild(buildSelect(''));
+                    syncPayload();
+                };
+
+                const initialCodes = selected.length > 0 ? selected : [''];
+                initialCodes.forEach((code) => container.appendChild(buildSelect(code)));
+
+                syncPayload();
+            };
+
+            window.initDepartmentBuilder = initDepartmentBuilder;
+            document.addEventListener('DOMContentLoaded', initDepartmentBuilder);
+            document.addEventListener('livewire:navigated', initDepartmentBuilder);
+            document.addEventListener('livewire:initialized', initDepartmentBuilder);
+            setTimeout(initDepartmentBuilder, 0);
+        })();
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     @livewireScripts
 </body>
