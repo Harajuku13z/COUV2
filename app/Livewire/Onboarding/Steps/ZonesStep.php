@@ -14,11 +14,9 @@ use Spatie\LivewireWizard\Components\StepComponent;
 class ZonesStep extends StepComponent
 {
     public string $department_code = '';
-    public string $selected_department_option = '';
+    public string $department_codes_payload = '[]';
     public array $available_departments = [];
-    public array $department_rows = [''];
     public array $selected_departments = [];
-    public string $priority_cities = '';
     public int $intervention_radius_km = 0;
 
     public function mount(): void
@@ -29,30 +27,35 @@ class ZonesStep extends StepComponent
             ->get(['code', 'name'])
             ->keyBy('code');
 
-        $this->department_rows = $storedDepartmentCodes !== [] ? array_values($storedDepartmentCodes) : [''];
-        $this->syncSelectedDepartmentsFromRows($knownDepartments->map(fn ($department) => $department->name)->all());
+        $this->selected_departments = collect($storedDepartmentCodes)
+            ->map(fn (string $code): array => [
+                'code' => $code,
+                'name' => (string) ($knownDepartments->get($code)?->name ?? $code),
+            ])
+            ->values()
+            ->all();
+
+        $this->department_codes_payload = json_encode($storedDepartmentCodes, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '[]';
         $this->department_code = (string) ($storedDepartmentCodes[0] ?? '');
-        $this->priority_cities = (string) (Setting::query()->where('key', 'priority_cities')->value('value') ?? '');
         $this->available_departments = $this->loadDepartmentOptions();
     }
 
     public function importAndContinue(): void
     {
-        $validated = $this->validate([
-            'department_rows' => ['required', 'array', 'min:1'],
-            'department_rows.*' => ['required', 'string', 'max:3'],
-            'priority_cities' => ['nullable', 'string'],
+        $this->validate([
+            'department_codes_payload' => ['required', 'string'],
         ]);
 
-        $departmentCodes = collect($validated['department_rows'])
-            ->map(fn (string $code): string => trim($code))
+        $decoded = json_decode($this->department_codes_payload, true);
+        $departmentCodes = collect(is_array($decoded) ? $decoded : [])
+            ->map(fn (mixed $code): string => trim((string) $code))
             ->filter()
             ->unique()
             ->values()
             ->all();
 
         if ($departmentCodes === []) {
-            $this->addError('department_rows', 'Choisis au moins un departement.');
+            $this->addError('department_codes_payload', 'Choisis au moins un departement.');
 
             return;
         }
@@ -65,7 +68,7 @@ class ZonesStep extends StepComponent
             ['key' => 'department_codes'],
             ['value' => json_encode($departmentCodes, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), 'group' => 'zones']
         );
-        Setting::query()->updateOrCreate(['key' => 'priority_cities'], ['value' => $validated['priority_cities'] ?? '', 'group' => 'zones']);
+        Setting::query()->where('key', 'priority_cities')->delete();
         Setting::query()->where('key', 'intervention_radius_km')->delete();
 
         foreach ($departmentCodes as $departmentCode) {
@@ -77,7 +80,8 @@ class ZonesStep extends StepComponent
 
     public function getImportedCitiesCountProperty(): int
     {
-        $departmentCodes = collect($this->department_rows)->filter()->unique()->values()->all();
+        $decoded = json_decode($this->department_codes_payload, true);
+        $departmentCodes = collect(is_array($decoded) ? $decoded : [])->filter()->unique()->values()->all();
 
         if ($departmentCodes === []) {
             return 0;
@@ -88,62 +92,22 @@ class ZonesStep extends StepComponent
 
     public function addDepartmentRow(): void
     {
-        $this->department_rows[] = '';
+        // Compatibility no-op for older browser state.
     }
 
     public function addSelectedDepartment(): void
     {
-        $code = trim($this->selected_department_option);
-
-        if ($code === '') {
-            return;
-        }
-
-        if (in_array($code, $this->department_rows, true)) {
-            $this->selected_department_option = '';
-
-            return;
-        }
-
-        $emptyIndex = collect($this->department_rows)->search(fn (mixed $value): bool => trim((string) $value) === '');
-
-        if ($emptyIndex !== false) {
-            $this->department_rows[$emptyIndex] = $code;
-        } else {
-            $this->department_rows[] = $code;
-        }
-
-        $this->selected_department_option = '';
-        $this->syncSelectedDepartmentsFromRows();
+        // Compatibility no-op for older browser state.
     }
 
     public function removeDepartmentRow(int $index): void
     {
-        if (count($this->department_rows) <= 1) {
-            $this->department_rows = [''];
-        } else {
-            unset($this->department_rows[$index]);
-            $this->department_rows = array_values($this->department_rows);
-        }
-
-        $this->syncSelectedDepartmentsFromRows();
+        // Compatibility no-op for older browser state.
     }
 
     public function removeDepartment(string $code): void
     {
-        $index = collect($this->department_rows)->search(fn (mixed $value): bool => trim((string) $value) === trim($code));
-
-        if ($index === false) {
-            return;
-        }
-
-        $this->removeDepartmentRow((int) $index);
-    }
-
-    public function updatedDepartmentRows(): void
-    {
-        $this->department_rows = array_values($this->department_rows);
-        $this->syncSelectedDepartmentsFromRows();
+        // Compatibility no-op for older browser state.
     }
 
     private function getStoredDepartmentCodes(): array
@@ -173,24 +137,6 @@ class ZonesStep extends StepComponent
             ->searchDepartments(null, 120)
             ->values()
             ->all();
-    }
-
-    private function syncSelectedDepartmentsFromRows(?array $knownNames = null): void
-    {
-        $knownNames ??= collect($this->available_departments)->pluck('name', 'code')->all();
-
-        $this->selected_departments = collect($this->department_rows)
-            ->map(fn (mixed $code): string => trim((string) $code))
-            ->filter()
-            ->unique()
-            ->values()
-            ->map(fn (string $code): array => [
-                'code' => $code,
-                'name' => (string) ($knownNames[$code] ?? $code),
-            ])
-            ->all();
-
-        $this->department_code = (string) ($this->selected_departments[0]['code'] ?? '');
     }
 
     public function render()

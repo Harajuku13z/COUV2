@@ -3,9 +3,9 @@
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
             <div>
                 <div class="setup-kicker">Etape 2 sur 6</div>
-                <h2 class="setup-section-title mt-3 mb-0">Zones d intervention</h2>
+                <h2 class="setup-section-title mt-3 mb-0">Import des communes par departement</h2>
             </div>
-            <span class="setup-pill">Ciblage geographique</span>
+            <span class="setup-pill">Selection simple</span>
         </div>
 
         <div class="setup-progress mt-4">
@@ -27,58 +27,32 @@
             <div class="col-lg-8">
                 <div class="row g-4">
                     <div class="col-12">
-                        <label class="form-label fw-semibold text-secondary">Departements cibles</label>
-                        <div class="d-grid gap-2">
-                            @foreach ($department_rows as $index => $departmentCode)
-                                <div class="row g-2 align-items-stretch">
-                                    <div class="col-sm-10">
-                                        <select wire:model="department_rows.{{ $index }}" class="form-select setup-form-select">
-                                            <option value="">Choisir un departement</option>
-                                            @foreach ($available_departments as $department)
-                                                <option value="{{ $department['code'] }}">{{ $department['code'] }} - {{ $department['name'] }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('department_rows.'.$index) <div class="text-danger small mt-2">{{ $message }}</div> @enderror
-                                    </div>
-                                    <div class="col-sm-2 d-grid">
-                                        <button wire:click="removeDepartmentRow({{ $index }})" type="button" class="btn btn-outline-secondary rounded-4 fw-semibold">
-                                            {{ count($department_rows) === 1 ? 'Vider' : 'Retirer' }}
-                                        </button>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
+                        <label class="form-label fw-semibold text-secondary">Departements a importer</label>
+
+                        <div
+                            id="department-builder"
+                            class="d-grid gap-2"
+                            data-options='@json($available_departments)'
+                            data-selected='@json(collect(json_decode($department_codes_payload, true) ?? [])->values()->all())'
+                            wire:ignore
+                        ></div>
+
+                        <input id="department-codes-payload" type="hidden" wire:model.live="department_codes_payload">
 
                         <div class="d-flex justify-content-start mt-3">
-                            <button wire:click="addDepartmentRow" type="button" class="btn btn-dark rounded-4 fw-semibold">+ Ajouter un departement</button>
+                            <button id="department-add-row" type="button" class="btn btn-dark rounded-4 fw-semibold">+ Ajouter un departement</button>
                         </div>
 
-                        <div class="form-text">Liste officielle des departements via l API geo.api.gouv.fr.</div>
+                        <div class="form-text">Choisis un ou plusieurs departements. Le systeme importera ensuite toutes les communes de chaque departement choisi.</div>
 
-                        @error('department_rows')
+                        @error('department_codes_payload')
                             <div class="text-danger small mt-2">{{ $message }}</div>
                         @enderror
-
-                        @if (count($selected_departments) > 0)
-                            <div class="d-flex flex-wrap gap-2 mt-3">
-                                @foreach ($selected_departments as $department)
-                                    <span class="badge rounded-pill text-bg-dark px-3 py-2 d-inline-flex align-items-center gap-2">
-                                        <span>{{ $department['code'] }} · {{ $department['name'] }}</span>
-                                        <button wire:click="removeDepartment('{{ $department['code'] }}')" type="button" class="btn btn-sm btn-light rounded-pill px-2 py-0">x</button>
-                                    </span>
-                                @endforeach
-                            </div>
-                        @endif
-
                     </div>
-                    <div class="col-12">
-                        <label class="form-label fw-semibold text-secondary">Communes prioritaires</label>
-                        <textarea wire:model="priority_cities" rows="5" class="form-control setup-form-control" placeholder="Nantes, Saint-Herblain, Reze, Orvault..."></textarea>
-                        @error('priority_cities') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
-                    </div>
+
                     <div class="col-12">
                         <div class="setup-info-card d-flex justify-content-between align-items-center">
-                            <span class="text-secondary">Communes actuellement importees</span>
+                            <span class="text-secondary">Communes deja importees pour la selection actuelle</span>
                             <span class="fs-4 fw-bold">{{ $this->importedCitiesCount }}</span>
                         </div>
                     </div>
@@ -87,10 +61,10 @@
 
             <div class="col-lg-4">
                 <div class="setup-dark-card h-100">
-                    <div class="text-uppercase small opacity-75 fw-semibold">Impact SEO</div>
-                    <h3 class="h2 fw-bold mt-3">On dessine ton terrain de jeu local</h3>
+                    <div class="text-uppercase small opacity-75 fw-semibold">Import automatique</div>
+                    <h3 class="h2 fw-bold mt-3">Toutes les communes seront recuperees</h3>
                     <p class="mt-3 mb-0 opacity-75" style="line-height: 1.9;">
-                        Les departements choisis sont recuperes depuis l API officielle du gouvernement, puis utilises pour importer les communes utiles et prioriser les futures pages locales.
+                        Tu choisis les departements, puis la plateforme importe automatiquement toutes les communes depuis l API officielle du gouvernement.
                     </p>
                 </div>
             </div>
@@ -102,3 +76,95 @@
         </div>
     </form>
 </div>
+
+<script>
+    (() => {
+        const initDepartmentBuilder = () => {
+            const container = document.getElementById('department-builder');
+            const addButton = document.getElementById('department-add-row');
+            const payloadInput = document.getElementById('department-codes-payload');
+
+            if (!container || !addButton || !payloadInput || container.dataset.initialized === '1') {
+                return;
+            }
+
+            const options = JSON.parse(container.dataset.options || '[]');
+            const selected = JSON.parse(container.dataset.selected || '[]');
+            container.dataset.initialized = '1';
+
+            const syncPayload = () => {
+                const codes = Array.from(container.querySelectorAll('select[data-department-row]'))
+                    .map((select) => select.value.trim())
+                    .filter((value, index, array) => value !== '' && array.indexOf(value) === index);
+
+                payloadInput.value = JSON.stringify(codes);
+                payloadInput.dispatchEvent(new Event('input', { bubbles: true }));
+            };
+
+            const buildSelect = (selectedCode = '') => {
+                const row = document.createElement('div');
+                row.className = 'row g-2 align-items-stretch';
+
+                const selectCol = document.createElement('div');
+                selectCol.className = 'col-sm-10';
+
+                const select = document.createElement('select');
+                select.className = 'form-select setup-form-select';
+                select.setAttribute('data-department-row', '1');
+
+                const placeholder = document.createElement('option');
+                placeholder.value = '';
+                placeholder.textContent = 'Choisir un departement';
+                select.appendChild(placeholder);
+
+                options.forEach((department) => {
+                    const option = document.createElement('option');
+                    option.value = department.code;
+                    option.textContent = `${department.code} - ${department.name}`;
+                    if (department.code === selectedCode) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+
+                select.addEventListener('change', syncPayload);
+                selectCol.appendChild(select);
+
+                const removeCol = document.createElement('div');
+                removeCol.className = 'col-sm-2 d-grid';
+
+                const removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.className = 'btn btn-outline-secondary rounded-4 fw-semibold';
+                removeButton.textContent = 'Retirer';
+                removeButton.addEventListener('click', () => {
+                    row.remove();
+                    if (container.querySelectorAll('[data-department-row]').length === 0) {
+                        container.appendChild(buildSelect(''));
+                    }
+                    syncPayload();
+                });
+
+                removeCol.appendChild(removeButton);
+                row.appendChild(selectCol);
+                row.appendChild(removeCol);
+
+                return row;
+            };
+
+            const initialCodes = selected.length > 0 ? selected : [''];
+            initialCodes.forEach((code) => container.appendChild(buildSelect(code)));
+
+            addButton.addEventListener('click', () => {
+                container.appendChild(buildSelect(''));
+                syncPayload();
+            });
+
+            syncPayload();
+        };
+
+        document.addEventListener('DOMContentLoaded', initDepartmentBuilder);
+        document.addEventListener('livewire:navigated', initDepartmentBuilder);
+        document.addEventListener('livewire:initialized', initDepartmentBuilder);
+    })();
+</script>
