@@ -55,9 +55,7 @@ class PageController extends Controller
 
     public function generateAll(): RedirectResponse
     {
-        $deptCode = (string) (Setting::query()->where('key', 'department_code')->value('value') ?? '');
-
-        if ($deptCode !== '') {
+        foreach ($this->getDepartmentCodes() as $deptCode) {
             GenerateAllPagesForDepartmentJob::dispatch($deptCode);
         }
 
@@ -81,5 +79,23 @@ class PageController extends Controller
         };
 
         return back()->with('status', 'Bulk action applied.');
+    }
+
+    private function getDepartmentCodes(): array
+    {
+        $rawCodes = Setting::query()->where('key', 'department_codes')->value('value');
+        $decodedCodes = is_string($rawCodes) ? json_decode($rawCodes, true) : null;
+
+        if (is_array($decodedCodes) && $decodedCodes !== []) {
+            return collect($decodedCodes)
+                ->map(fn (mixed $code): string => trim((string) $code))
+                ->filter()
+                ->values()
+                ->all();
+        }
+
+        $legacyCode = (string) (Setting::query()->where('key', 'department_code')->value('value') ?? '');
+
+        return $legacyCode === '' ? [] : [$legacyCode];
     }
 }

@@ -17,6 +17,48 @@ class GeoGouvService implements GeoGouvServiceInterface
 {
     use TracksApiCost;
 
+    public function searchDepartments(?string $query = null, int $limit = 20): Collection
+    {
+        $normalizedQuery = trim((string) $query);
+        $cacheKey = 'geo:departments:'.md5($normalizedQuery.'|'.$limit);
+
+        return Cache::remember(
+            $cacheKey,
+            now()->addDays(30),
+            function () use ($normalizedQuery, $limit): Collection {
+                $response = Http::baseUrl(config('services.geo_gouv.base_url'))
+                    ->timeout((int) config('services.geo_gouv.timeout', 20))
+                    ->get('/departements', [
+                        'fields' => 'nom,code,codeRegion',
+                        'format' => 'json',
+                    ])
+                    ->throw()
+                    ->json();
+
+                return collect($response)
+                    ->filter(function (array $department) use ($normalizedQuery): bool {
+                        if ($normalizedQuery === '') {
+                            return true;
+                        }
+
+                        $name = mb_strtolower((string) ($department['nom'] ?? ''));
+                        $code = mb_strtolower((string) ($department['code'] ?? ''));
+                        $query = mb_strtolower($normalizedQuery);
+
+                        return str_contains($name, $query) || str_contains($code, $query);
+                    })
+                    ->sortBy(fn (array $department): string => (string) ($department['code'] ?? ''))
+                    ->take($limit)
+                    ->map(fn (array $department): array => [
+                        'code' => (string) ($department['code'] ?? ''),
+                        'name' => (string) ($department['nom'] ?? ''),
+                        'region_code' => (string) ($department['codeRegion'] ?? ''),
+                    ])
+                    ->values();
+            }
+        );
+    }
+
     public function getCitiesByDepartment(string $deptCode): Collection
     {
         return Cache::remember(

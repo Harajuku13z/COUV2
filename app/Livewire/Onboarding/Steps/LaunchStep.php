@@ -15,9 +15,7 @@ class LaunchStep extends StepComponent
 {
     public function launch()
     {
-        $departmentCode = (string) (Setting::query()->where('key', 'department_code')->value('value') ?? '');
-
-        if ($departmentCode !== '') {
+        foreach ($this->getDepartmentCodes() as $departmentCode) {
             GenerateAllPagesForDepartmentJob::dispatch($departmentCode);
         }
 
@@ -26,8 +24,10 @@ class LaunchStep extends StepComponent
 
     public function getEstimatedPagesProperty(): int
     {
-        $departmentCode = (string) (Setting::query()->where('key', 'department_code')->value('value') ?? '');
-        $cities = City::query()->where('department_code', $departmentCode)->active()->count();
+        $departmentCodes = $this->getDepartmentCodes();
+        $cities = $departmentCodes === []
+            ? 0
+            : City::query()->whereIn('department_code', $departmentCodes)->active()->count();
         $services = Service::query()->count();
 
         return $cities * max($services, 1) * 2;
@@ -41,5 +41,23 @@ class LaunchStep extends StepComponent
     public function render()
     {
         return view('livewire.onboarding.launch-step');
+    }
+
+    private function getDepartmentCodes(): array
+    {
+        $rawCodes = Setting::query()->where('key', 'department_codes')->value('value');
+        $decodedCodes = is_string($rawCodes) ? json_decode($rawCodes, true) : null;
+
+        if (is_array($decodedCodes) && $decodedCodes !== []) {
+            return collect($decodedCodes)
+                ->map(fn (mixed $code): string => trim((string) $code))
+                ->filter()
+                ->values()
+                ->all();
+        }
+
+        $legacyCode = (string) (Setting::query()->where('key', 'department_code')->value('value') ?? '');
+
+        return $legacyCode === '' ? [] : [$legacyCode];
     }
 }

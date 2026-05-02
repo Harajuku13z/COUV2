@@ -8,6 +8,8 @@ use Illuminate\Support\Collection;
 
 interface GeoGouvServiceInterface
 {
+    public function searchDepartments(?string $query = null, int $limit = 20): Collection;
+
     public function getCitiesByDepartment(string $deptCode): Collection;
 
     public function getCityByInseeCode(string $inseeCode): ?array;

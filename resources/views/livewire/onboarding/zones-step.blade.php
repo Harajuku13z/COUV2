@@ -15,9 +15,46 @@
         <div class="row g-4 mt-1">
             <div class="col-lg-8">
                 <div class="row g-4">
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold text-secondary">Departement cible</label>
-                        <input wire:model="department_code" class="form-control setup-form-control" placeholder="44">
+                    <div class="col-12">
+                        <label class="form-label fw-semibold text-secondary">Departements cibles</label>
+                        <input
+                            wire:model.live.debounce.300ms="department_search"
+                            class="form-control setup-form-control"
+                            placeholder="Ex. 44, Loire-Atlantique, 75, Paris"
+                        >
+                        <div class="form-text">Recherche officielle via l API geo.api.gouv.fr. Tu peux ajouter plusieurs departements.</div>
+
+                        @error('selected_departments')
+                            <div class="text-danger small mt-2">{{ $message }}</div>
+                        @enderror
+
+                        @if (count($selected_departments) > 0)
+                            <div class="d-flex flex-wrap gap-2 mt-3">
+                                @foreach ($selected_departments as $department)
+                                    <span class="badge rounded-pill text-bg-dark px-3 py-2 d-inline-flex align-items-center gap-2">
+                                        <span>{{ $department['code'] }} · {{ $department['name'] }}</span>
+                                        <button wire:click="removeDepartment('{{ $department['code'] }}')" type="button" class="btn btn-sm btn-light rounded-pill px-2 py-0">x</button>
+                                    </span>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        @if ($department_search !== '' && count($department_suggestions) > 0)
+                            <div class="setup-sidecard p-2 mt-3">
+                                <div class="list-group list-group-flush">
+                                    @foreach ($department_suggestions as $department)
+                                        <button
+                                            wire:click='addDepartment(@js($department["code"]), @js($department["name"]))'
+                                            type="button"
+                                            class="list-group-item list-group-item-action border-0 rounded-3"
+                                        >
+                                            <span class="fw-semibold">{{ $department['code'] }}</span>
+                                            <span class="text-secondary">· {{ $department['name'] }}</span>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-secondary">Rayon d intervention</label>
@@ -44,7 +81,7 @@
                     <div class="text-uppercase small opacity-75 fw-semibold">Impact SEO</div>
                     <h3 class="h2 fw-bold mt-3">On dessine ton terrain de jeu local</h3>
                     <p class="mt-3 mb-0 opacity-75" style="line-height: 1.9;">
-                        Le departement et les villes prioritaires servent a importer les communes utiles et a prioriser les futures pages locales.
+                        Les departements choisis sont recuperes depuis l API officielle du gouvernement, puis utilises pour importer les communes utiles et prioriser les futures pages locales.
                     </p>
                 </div>
             </div>
