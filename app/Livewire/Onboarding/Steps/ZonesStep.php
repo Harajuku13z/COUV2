@@ -13,9 +13,9 @@ use Spatie\LivewireWizard\Components\StepComponent;
 
 class ZonesStep extends StepComponent
 {
-    public string $department_search = '';
+    public string $selected_department_option = '';
+    public array $available_departments = [];
     public array $selected_departments = [];
-    public array $department_suggestions = [];
     public string $priority_cities = '';
     public int $intervention_radius_km = 30;
 
@@ -37,7 +37,7 @@ class ZonesStep extends StepComponent
 
         $this->priority_cities = (string) (Setting::query()->where('key', 'priority_cities')->value('value') ?? '');
         $this->intervention_radius_km = (int) (Setting::query()->where('key', 'intervention_radius_km')->value('value') ?? 30);
-        $this->department_suggestions = $this->searchDepartmentOptions();
+        $this->available_departments = $this->loadDepartmentOptions();
     }
 
     public function importAndContinue(): void
@@ -85,9 +85,20 @@ class ZonesStep extends StepComponent
         return City::query()->whereIn('department_code', $departmentCodes)->count();
     }
 
-    public function updatedDepartmentSearch(): void
+    public function addSelectedDepartment(): void
     {
-        $this->department_suggestions = $this->searchDepartmentOptions();
+        if ($this->selected_department_option === '') {
+            return;
+        }
+
+        $department = collect($this->available_departments)
+            ->first(fn (array $option): bool => $option['code'] === $this->selected_department_option);
+
+        if ($department === null) {
+            return;
+        }
+
+        $this->addDepartment($department['code'], $department['name']);
     }
 
     public function addDepartment(string $code, string $name): void
@@ -98,8 +109,8 @@ class ZonesStep extends StepComponent
             $this->selected_departments[] = ['code' => $code, 'name' => $name];
         }
 
-        $this->department_search = '';
-        $this->department_suggestions = $this->searchDepartmentOptions();
+        $this->selected_department_option = '';
+        $this->available_departments = $this->loadDepartmentOptions();
     }
 
     public function removeDepartment(string $code): void
@@ -108,6 +119,8 @@ class ZonesStep extends StepComponent
             ->reject(fn (array $department): bool => $department['code'] === $code)
             ->values()
             ->all();
+
+        $this->available_departments = $this->loadDepartmentOptions();
     }
 
     private function getStoredDepartmentCodes(): array
@@ -128,14 +141,14 @@ class ZonesStep extends StepComponent
         return $legacyCode === '' ? [] : [$legacyCode];
     }
 
-    private function searchDepartmentOptions(): array
+    private function loadDepartmentOptions(): array
     {
         /** @var GeoGouvServiceInterface $geoGouvService */
         $geoGouvService = app(GeoGouvServiceInterface::class);
         $selectedCodes = collect($this->selected_departments)->pluck('code')->all();
 
         return $geoGouvService
-            ->searchDepartments($this->department_search, 20)
+            ->searchDepartments(null, 120)
             ->reject(fn (array $department): bool => in_array($department['code'], $selectedCodes, true))
             ->values()
             ->all();

@@ -17,12 +17,20 @@
                 <div class="row g-4">
                     <div class="col-12">
                         <label class="form-label fw-semibold text-secondary">Departements cibles</label>
-                        <input
-                            wire:model.live.debounce.300ms="department_search"
-                            class="form-control setup-form-control"
-                            placeholder="Ex. 44, Loire-Atlantique, 75, Paris"
-                        >
-                        <div class="form-text">Recherche officielle via l API geo.api.gouv.fr. Tu peux ajouter plusieurs departements.</div>
+                        <div class="row g-2 align-items-stretch">
+                            <div class="col-sm-9">
+                                <select wire:model="selected_department_option" class="form-select setup-form-select">
+                                    <option value="">Choisir un departement</option>
+                                    @foreach ($available_departments as $department)
+                                        <option value="{{ $department['code'] }}">{{ $department['code'] }} - {{ $department['name'] }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-sm-3 d-grid">
+                                <button wire:click="addSelectedDepartment" type="button" class="btn btn-dark rounded-4 fw-semibold">+ Ajouter</button>
+                            </div>
+                        </div>
+                        <div class="form-text">Liste officielle des departements via l API geo.api.gouv.fr. Tu peux en ajouter plusieurs.</div>
 
                         @error('selected_departments')
                             <div class="text-danger small mt-2">{{ $message }}</div>
@@ -39,22 +47,6 @@
                             </div>
                         @endif
 
-                        @if ($department_search !== '' && count($department_suggestions) > 0)
-                            <div class="setup-sidecard p-2 mt-3">
-                                <div class="list-group list-group-flush">
-                                    @foreach ($department_suggestions as $department)
-                                        <button
-                                            wire:click='addDepartment(@js($department["code"]), @js($department["name"]))'
-                                            type="button"
-                                            class="list-group-item list-group-item-action border-0 rounded-3"
-                                        >
-                                            <span class="fw-semibold">{{ $department['code'] }}</span>
-                                            <span class="text-secondary">· {{ $department['name'] }}</span>
-                                        </button>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold text-secondary">Rayon d intervention</label>
