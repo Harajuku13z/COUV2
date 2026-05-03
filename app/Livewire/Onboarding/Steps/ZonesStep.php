@@ -75,8 +75,14 @@ class ZonesStep extends StepComponent
         /** @var GeoGouvServiceInterface $geoGouvService */
         $geoGouvService = app(GeoGouvServiceInterface::class);
 
-        foreach ($departmentCodes as $departmentCode) {
-            $geoGouvService->importDepartment($departmentCode);
+        try {
+            foreach ($departmentCodes as $departmentCode) {
+                $geoGouvService->importDepartment($departmentCode);
+            }
+        } catch (\Throwable $e) {
+            $this->addError('department_codes_payload', 'Erreur import : ' . $e->getMessage());
+
+            return;
         }
 
         $this->nextStep();

@@ -144,6 +144,8 @@ class GeoGouvService implements GeoGouvServiceInterface
 
     public function importDepartment(string $deptCode): int
     {
+        @set_time_limit(300);
+
         $departmentMeta = Http::baseUrl(config('services.geo_gouv.base_url'))
             ->timeout((int) config('services.geo_gouv.timeout', 20))
             ->get("/departements/{$deptCode}", [
@@ -162,67 +164,94 @@ class GeoGouvService implements GeoGouvServiceInterface
             ]
         );
 
-        $cities = $this->getCitiesByDepartment($deptCode)->values();
+        $cities = $this->getCitiesByDepartment($deptCode)->values()->all();
+
+        // Pre-index coordinates for O(n²) but fast-array Haversine (avoids Collection overhead)
+        $coordsIndex = [];
+        foreach ($cities as $city) {
+            if ($city['lat'] !== null && $city['lon'] !== null) {
+                $coordsIndex[$city['code_insee']] = [
+                    'lat' => (float) $city['lat'],
+                    'lon' => (float) $city['lon'],
+                    'name' => $city['name'],
+                    'slug' => $city['slug'],
+                    'population' => (int) $city['population'],
+                ];
+            }
+        }
+
+        $now = now()->toDateTimeString();
+        $records = [];
 
         foreach ($cities as $city) {
-            $nearbyCities = $cities
-                ->filter(function (array $candidate) use ($city): bool {
-                    if ($candidate['code_insee'] === $city['code_insee']) {
-                        return false;
-                    }
-
-                    if ($candidate['lat'] === null || $candidate['lon'] === null || $city['lat'] === null || $city['lon'] === null) {
-                        return false;
-                    }
-
-                    return $this->haversineDistance(
-                        (float) $city['lat'],
-                        (float) $city['lon'],
-                        (float) $candidate['lat'],
-                        (float) $candidate['lon'],
-                    ) <= 30.0;
-                })
-                ->sortByDesc('population')
-                ->take(10)
-                ->values()
-                ->map(fn (array $candidate): array => [
-                    'code_insee' => $candidate['code_insee'],
-                    'name' => $candidate['name'],
-                    'slug' => $candidate['slug'],
-                ])
-                ->all();
-
             $population = (int) $city['population'];
             $priority = match (true) {
                 $population > 50000 => 10,
                 $population > 20000 => 9,
                 $population > 10000 => 8,
-                $population > 5000 => 7,
-                $population > 2000 => 6,
-                $population > 1000 => 5,
-                $population > 500 => 4,
-                default => 2,
+                $population > 5000  => 7,
+                $population > 2000  => 6,
+                $population > 1000  => 5,
+                $population > 500   => 4,
+                default             => 2,
             };
 
-            City::query()->updateOrCreate(
-                ['code_insee' => $city['code_insee']],
-                [
-                    'name' => $city['name'],
-                    'slug' => $city['slug'],
-                    'department_code' => $deptCode,
-                    'postal_code' => $city['postal_code'],
-                    'population' => $population,
-                    'lat' => $city['lat'],
-                    'lon' => $city['lon'],
-                    'surface' => $city['surface'],
-                    'seo_priority' => $priority,
-                    'nearby_cities' => $nearbyCities,
-                    'is_active' => $priority > 2,
-                ]
+            $nearbyCities = [];
+            if ($city['lat'] !== null && $city['lon'] !== null) {
+                $cityLat = (float) $city['lat'];
+                $cityLon = (float) $city['lon'];
+                $withDistances = [];
+
+                foreach ($coordsIndex as $inseeCode => $coords) {
+                    if ($inseeCode === $city['code_insee']) {
+                        continue;
+                    }
+                    if ($this->haversineDistance($cityLat, $cityLon, $coords['lat'], $coords['lon']) <= 30.0) {
+                        $withDistances[] = [
+                            'code_insee' => $inseeCode,
+                            'name'       => $coords['name'],
+                            'slug'       => $coords['slug'],
+                            'population' => $coords['population'],
+                        ];
+                    }
+                }
+
+                usort($withDistances, fn (array $a, array $b): int => $b['population'] - $a['population']);
+
+                $nearbyCities = array_map(
+                    fn (array $c): array => ['code_insee' => $c['code_insee'], 'name' => $c['name'], 'slug' => $c['slug']],
+                    array_slice($withDistances, 0, 10)
+                );
+            }
+
+            $records[] = [
+                'code_insee'     => $city['code_insee'],
+                'name'           => $city['name'],
+                'slug'           => $city['slug'],
+                'department_code' => $deptCode,
+                'postal_code'    => $city['postal_code'],
+                'population'     => $population,
+                'lat'            => $city['lat'],
+                'lon'            => $city['lon'],
+                'surface'        => $city['surface'],
+                'seo_priority'   => $priority,
+                'nearby_cities'  => json_encode($nearbyCities, JSON_UNESCAPED_UNICODE),
+                'is_active'      => $priority > 2 ? 1 : 0,
+                'created_at'     => $now,
+                'updated_at'     => $now,
+            ];
+        }
+
+        // Single batch upsert per 100 rows instead of N individual updateOrCreate calls
+        foreach (array_chunk($records, 100) as $chunk) {
+            City::query()->upsert(
+                $chunk,
+                ['code_insee'],
+                ['name', 'slug', 'department_code', 'postal_code', 'population', 'lat', 'lon', 'surface', 'seo_priority', 'nearby_cities', 'is_active', 'updated_at']
             );
         }
 
-        return $cities->count();
+        return count($records);
     }
 
     private function haversineDistance(float $lat1, float $lon1, float $lat2, float $lon2): float
