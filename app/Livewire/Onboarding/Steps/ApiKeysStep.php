@@ -26,8 +26,8 @@ class ApiKeysStep extends StepComponent
     public function saveAndContinue(): void
     {
         $this->validate([
-            'openai_api_key' => ['required', 'string'],
-            'serpapi_key' => ['required', 'string'],
+            'openai_api_key' => ['nullable', 'string'],
+            'serpapi_key' => ['nullable', 'string'],
             'openweather_api_key' => ['nullable', 'string'],
         ]);
 
