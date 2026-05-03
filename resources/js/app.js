@@ -1,10 +1,8 @@
 import './bootstrap';
-import Alpine from 'alpinejs';
+import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm';
 import Chart from 'chart.js/auto';
-import { Livewire } from '../../vendor/livewire/livewire/dist/livewire.esm';
 
 window.Alpine = Alpine;
 window.Chart = Chart;
 
-Alpine.start();
 Livewire.start();
