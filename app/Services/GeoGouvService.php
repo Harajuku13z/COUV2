@@ -239,10 +239,13 @@ class GeoGouvService implements GeoGouvServiceInterface
 
     private function normalizeCityData(array $raw, string $departmentCode): array
     {
+        $codeInsee = (string) ($raw['code'] ?? '');
+        $baseSlug = Str::slug((string) ($raw['nom'] ?? ''));
+
         return [
-            'code_insee' => (string) ($raw['code'] ?? ''),
+            'code_insee' => $codeInsee,
             'name' => (string) ($raw['nom'] ?? ''),
-            'slug' => Str::slug((string) ($raw['nom'] ?? '')),
+            'slug' => $baseSlug !== '' && $codeInsee !== '' ? "{$baseSlug}-{$codeInsee}" : $baseSlug,
             'department_code' => $departmentCode,
             'postal_code' => collect($raw['codesPostaux'] ?? [])->filter()->first(),
             'population' => (int) ($raw['population'] ?? 0),
