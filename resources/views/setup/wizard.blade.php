@@ -261,8 +261,21 @@
                         .map((select) => select.value.trim())
                         .filter((value, index, array) => value !== '' && array.indexOf(value) === index);
 
-                    payloadInput.value = JSON.stringify(codes);
+                    const payload = JSON.stringify(codes);
+                    payloadInput.value = payload;
                     payloadInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    payloadInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+                    const componentRoot = payloadInput.closest('[wire\\:id]');
+                    const componentId = componentRoot ? componentRoot.getAttribute('wire:id') : null;
+
+                    if (window.Livewire && componentId) {
+                        const component = window.Livewire.find(componentId);
+
+                        if (component) {
+                            component.set('department_codes_payload', payload);
+                        }
+                    }
                 };
 
                 const buildSelect = (selectedCode = '') => {
