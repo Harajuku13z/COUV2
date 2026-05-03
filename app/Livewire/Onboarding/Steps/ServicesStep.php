@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Onboarding\Steps;
 
+use App\Models\Company;
 use App\Models\Service;
 use App\Models\WebsiteService;
 use Spatie\LivewireWizard\Components\StepComponent;
@@ -42,8 +43,18 @@ class ServicesStep extends StepComponent
 
     public function render()
     {
+        $activityType = Company::query()->value('activity_type') ?? 'custom';
+
+        $services = Service::query()
+            ->where('activity_type', $activityType)
+            ->orderBy('category')
+            ->orderBy('name')
+            ->get()
+            ->groupBy('category');
+
         return view('livewire.onboarding.services-step', [
-            'services' => Service::query()->orderBy('name')->get(),
+            'servicesByCategory' => $services,
+            'activityType' => $activityType,
         ]);
     }
 }
