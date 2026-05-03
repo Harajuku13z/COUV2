@@ -38,6 +38,8 @@ class ZonesStep extends StepComponent
         $this->department_codes_payload = json_encode($storedDepartmentCodes, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '[]';
         $this->department_code = (string) ($storedDepartmentCodes[0] ?? '');
         $this->available_departments = $this->loadDepartmentOptions();
+
+        $this->dispatch('zones-step-mounted');
     }
 
     public function importAndContinue(): void

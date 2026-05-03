@@ -331,6 +331,8 @@
             document.addEventListener('DOMContentLoaded', initDepartmentBuilder);
             document.addEventListener('livewire:navigated', initDepartmentBuilder);
             document.addEventListener('livewire:initialized', initDepartmentBuilder);
+            document.addEventListener('zones-step-mounted', initDepartmentBuilder);
+            window.addEventListener('zones-step-mounted', initDepartmentBuilder);
             setTimeout(initDepartmentBuilder, 0);
         })();
     </script>
