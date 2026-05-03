@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Livewire\Onboarding\Steps;
 
 use App\Contracts\GeoGouvServiceInterface;
-use App\Jobs\ImportDepartmentCitiesJob;
 use App\Models\City;
 use App\Models\Department;
 use App\Models\Setting;
@@ -73,8 +72,11 @@ class ZonesStep extends StepComponent
         Setting::query()->where('key', 'priority_cities')->delete();
         Setting::query()->where('key', 'intervention_radius_km')->delete();
 
+        /** @var GeoGouvServiceInterface $geoGouvService */
+        $geoGouvService = app(GeoGouvServiceInterface::class);
+
         foreach ($departmentCodes as $departmentCode) {
-            ImportDepartmentCitiesJob::dispatch($departmentCode);
+            $geoGouvService->importDepartment($departmentCode);
         }
 
         $this->nextStep();
