@@ -2,95 +2,127 @@
 @section('title', 'Témoignages')
 
 @section('content')
-<div class="space-y-6">
+<div class="d-grid gap-4">
 
-    {{-- Header --}}
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-bold text-slate-900">Témoignages</h1>
-            <p class="mt-1 text-sm text-slate-500">Gérez les avis clients affichés sur votre site.</p>
-        </div>
-        <a href="{{ route('admin.testimonials.create') }}"
-           class="rounded-2xl bg-slate-900 text-white px-4 py-2 text-sm font-medium hover:bg-slate-800 transition-colors">
-            + Ajouter
-        </a>
-    </div>
+    {{-- Hero banner --}}
+    <section class="admin-panel admin-panel-dark p-4 p-lg-5">
+        <p class="admin-kicker" style="color:rgba(255,244,232,.72);">Marketing</p>
+        <h1 class="admin-page-title" style="color:#fff7ed;">Preuve sociale</h1>
+        <p class="admin-page-copy" style="color:rgba(248,244,236,.78);">Gérez les avis clients affichés sur votre site pour renforcer la confiance des visiteurs.</p>
+    </section>
 
-    {{-- Success alert --}}
-    @if (session('status'))
-        <div class="rounded-2xl bg-green-50 border border-green-200 text-green-800 px-4 py-3 text-sm">
-            {{ session('status') }}
+    {{-- Alerts --}}
+    @if(session('status'))
+        <div class="admin-alert">{{ session('status') }}</div>
+    @endif
+    @if($errors->any())
+        <div class="admin-alert admin-alert-error">
+            <ul class="mb-0 ps-3">
+                @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
+            </ul>
         </div>
     @endif
 
-    {{-- Table --}}
-    <div class="rounded-[2rem] bg-white p-6 shadow-sm">
-        @if ($testimonials->isEmpty())
-            <p class="text-sm text-slate-500 text-center py-8">Aucun témoignage pour le moment.</p>
+    {{-- Table panel --}}
+    <div class="admin-panel admin-panel-strong p-4 p-lg-5">
+        <div class="admin-section-head">
+            <div>
+                <h2 class="admin-section-title">Tous les témoignages</h2>
+                <p class="admin-section-copy">{{ $testimonials->total() }} témoignage{{ $testimonials->total() > 1 ? 's' : '' }} au total.</p>
+            </div>
+            <div class="admin-actions">
+                <a href="{{ \App\Support\CentralAppUrl::admin('testimonials/create') }}" class="admin-btn admin-btn-primary">
+                    <i class="bi bi-plus-lg me-1"></i>Ajouter
+                </a>
+            </div>
+        </div>
+
+        @if($testimonials->isEmpty())
+            <div class="admin-note text-center py-5">
+                <i class="bi bi-star-fill fs-3 d-block mb-2 text-muted"></i>
+                <p class="mb-0">Aucun témoignage pour le moment.</p>
+            </div>
         @else
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left">
+            <div class="admin-table-wrap mt-3">
+                <table class="admin-table">
                     <thead>
-                        <tr class="border-b border-slate-100">
-                            <th class="pb-3 font-medium text-slate-500">Auteur</th>
-                            <th class="pb-3 font-medium text-slate-500">Ville</th>
-                            <th class="pb-3 font-medium text-slate-500">Service</th>
-                            <th class="pb-3 font-medium text-slate-500 text-center">Note</th>
-                            <th class="pb-3 font-medium text-slate-500 text-center">Visible</th>
-                            <th class="pb-3 font-medium text-slate-500 text-center">Source</th>
-                            <th class="pb-3 font-medium text-slate-500">Date</th>
-                            <th class="pb-3 font-medium text-slate-500 text-right">Actions</th>
+                        <tr>
+                            <th>Auteur</th>
+                            <th>Service</th>
+                            <th>Note</th>
+                            <th>Source</th>
+                            <th>Visibilité</th>
+                            <th>Date</th>
+                            <th class="text-end">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-50">
-                        @foreach ($testimonials as $testimonial)
-                            <tr class="hover:bg-slate-50/50 transition-colors">
-                                <td class="py-3 font-medium text-slate-900">{{ $testimonial->author_name }}</td>
-                                <td class="py-3 text-slate-600">{{ $testimonial->author_city ?: '—' }}</td>
-                                <td class="py-3 text-slate-600 max-w-[140px] truncate">{{ $testimonial->service_label ?: '—' }}</td>
-                                <td class="py-3 text-center">
-                                    <span class="text-amber-500">
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            {{ $i <= $testimonial->rating ? '★' : '☆' }}
-                                        @endfor
+                    <tbody>
+                        @foreach($testimonials as $testimonial)
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
+                                             style="width:36px;height:36px;background:var(--admin-accent);font-size:.8rem;flex-shrink:0;">
+                                            {{ strtoupper(mb_substr($testimonial->author_name, 0, 1)) }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold" style="font-size:.9rem;">{{ $testimonial->author_name }}</div>
+                                            @if($testimonial->author_city)
+                                                <div class="text-muted" style="font-size:.78rem;">{{ $testimonial->author_city }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="max-width:140px;">
+                                    <span class="d-inline-block text-truncate" style="max-width:130px;">
+                                        {{ $testimonial->service_label ?: '—' }}
                                     </span>
                                 </td>
-                                <td class="py-3 text-center">
-                                    @if ($testimonial->is_visible)
-                                        <span class="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700">Visible</span>
+                                <td>
+                                    <span style="color:#d97706;letter-spacing:.05em;">
+                                        @for($i = 1; $i <= 5; $i++){{ $i <= $testimonial->rating ? '★' : '☆' }}@endfor
+                                    </span>
+                                </td>
+                                <td>
+                                    @if($testimonial->source === 'google')
+                                        <span class="admin-badge admin-badge-accent">Google</span>
                                     @else
-                                        <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">Masqué</span>
+                                        <span class="admin-badge admin-badge-muted">Manuel</span>
                                     @endif
                                 </td>
-                                <td class="py-3 text-center">
-                                    @if ($testimonial->source === 'google')
-                                        <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">Google</span>
+                                <td>
+                                    @if($testimonial->is_visible)
+                                        <span class="admin-badge admin-badge-success"><i class="bi bi-eye me-1"></i>Visible</span>
                                     @else
-                                        <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">Manuel</span>
+                                        <span class="admin-badge admin-badge-muted"><i class="bi bi-eye-slash me-1"></i>Masqué</span>
                                     @endif
                                 </td>
-                                <td class="py-3 text-slate-500 text-xs">{{ $testimonial->created_at->format('d/m/Y') }}</td>
-                                <td class="py-3 text-right">
-                                    <div class="flex items-center justify-end gap-2">
-                                        <form action="{{ route('admin.testimonials.toggle', $testimonial->id) }}" method="POST" class="inline">
+                                <td style="font-size:.82rem;color:var(--admin-muted);">
+                                    {{ $testimonial->created_at->format('d/m/Y') }}
+                                </td>
+                                <td class="text-end">
+                                    <div class="admin-actions justify-content-end">
+                                        <form action="{{ \App\Support\CentralAppUrl::admin('testimonials/'.$testimonial->id.'/toggle') }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('PATCH')
-                                            <button type="submit"
-                                                    class="rounded-2xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                                                {{ $testimonial->is_visible ? 'Masquer' : 'Afficher' }}
+                                            <button type="submit" class="admin-btn admin-btn-secondary" style="padding:.45rem .85rem;font-size:.8rem;">
+                                                @if($testimonial->is_visible)
+                                                    <i class="bi bi-eye-slash me-1"></i>Masquer
+                                                @else
+                                                    <i class="bi bi-eye me-1"></i>Afficher
+                                                @endif
                                             </button>
                                         </form>
-                                        <a href="{{ route('admin.testimonials.edit', $testimonial->id) }}"
-                                           class="rounded-2xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                                            Modifier
+                                        <a href="{{ \App\Support\CentralAppUrl::admin('testimonials/'.$testimonial->id.'/edit') }}"
+                                           class="admin-btn admin-btn-warning" style="padding:.45rem .85rem;font-size:.8rem;">
+                                            <i class="bi bi-pencil-fill me-1"></i>Modifier
                                         </a>
-                                        <form action="{{ route('admin.testimonials.destroy', $testimonial->id) }}" method="POST" class="inline"
+                                        <form action="{{ \App\Support\CentralAppUrl::admin('testimonials/'.$testimonial->id) }}" method="POST" class="d-inline"
                                               onsubmit="return confirm('Supprimer ce témoignage ?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit"
-                                                    class="rounded-2xl border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors">
-                                                Supprimer
+                                            <button type="submit" class="admin-btn admin-btn-danger" style="padding:.45rem .85rem;font-size:.8rem;">
+                                                <i class="bi bi-trash3-fill me-1"></i>Supprimer
                                             </button>
                                         </form>
                                     </div>
@@ -101,8 +133,8 @@
                 </table>
             </div>
 
-            @if ($testimonials->hasPages())
-                <div class="mt-6">
+            @if($testimonials->hasPages())
+                <div class="mt-4">
                     {{ $testimonials->links() }}
                 </div>
             @endif

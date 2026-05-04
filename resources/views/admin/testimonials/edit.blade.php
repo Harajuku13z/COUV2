@@ -2,111 +2,111 @@
 @section('title', 'Modifier le témoignage')
 
 @section('content')
-<div class="space-y-6">
+<div class="d-grid gap-4">
 
-    {{-- Header --}}
+    {{-- Back link --}}
     <div>
-        <a href="{{ route('admin.testimonials.index') }}"
-           class="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 mb-2">
-            &larr; Retour aux témoignages
+        <a href="{{ \App\Support\CentralAppUrl::admin('testimonials') }}" class="admin-btn admin-btn-secondary d-inline-flex">
+            <i class="bi bi-arrow-left me-1"></i>Retour aux témoignages
         </a>
-        <h1 class="text-2xl font-bold text-slate-900">Modifier le témoignage de {{ $testimonial->author_name }}</h1>
     </div>
 
-    {{-- Success alert --}}
-    @if (session('status'))
-        <div class="rounded-2xl bg-green-50 border border-green-200 text-green-800 px-4 py-3 text-sm">
-            {{ session('status') }}
-        </div>
+    {{-- Alerts --}}
+    @if(session('status'))
+        <div class="admin-alert">{{ session('status') }}</div>
     @endif
-
-    {{-- Validation errors --}}
-    @if ($errors->any())
-        <div class="rounded-2xl bg-red-50 border border-red-200 text-red-800 px-4 py-3 text-sm">
-            <ul class="list-disc list-inside space-y-1">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
+    @if($errors->any())
+        <div class="admin-alert admin-alert-error">
+            <ul class="mb-0 ps-3">
+                @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
             </ul>
         </div>
     @endif
 
-    <form action="{{ route('admin.testimonials.update', $testimonial->id) }}" method="POST">
+    <form action="{{ \App\Support\CentralAppUrl::admin('testimonials/'.$testimonial->id) }}" method="POST">
         @csrf
         @method('PUT')
 
-        <div class="rounded-[2rem] bg-white p-6 shadow-sm space-y-5">
-
-            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div class="admin-panel admin-panel-strong p-4 p-lg-5">
+            <div class="admin-section-head mb-4">
                 <div>
-                    <label for="author_name" class="block text-sm font-medium text-slate-700 mb-1">Nom de l'auteur <span class="text-red-500">*</span></label>
+                    <h1 class="admin-page-title">Modifier le témoignage</h1>
+                    <p class="admin-page-copy">Avis de <strong>{{ $testimonial->author_name }}</strong>.</p>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="author_name" class="form-label fw-semibold">Nom de l'auteur <span class="text-danger">*</span></label>
                     <input type="text" id="author_name" name="author_name"
                            value="{{ old('author_name', $testimonial->author_name) }}"
-                           class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
-                           required>
+                           class="form-control" required>
                 </div>
 
-                <div>
-                    <label for="author_city" class="block text-sm font-medium text-slate-700 mb-1">Ville</label>
+                <div class="col-md-6">
+                    <label for="author_city" class="form-label fw-semibold">Ville</label>
                     <input type="text" id="author_city" name="author_city"
                            value="{{ old('author_city', $testimonial->author_city ?? '') }}"
-                           class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300">
+                           class="form-control">
                 </div>
 
-                <div>
-                    <label for="service_label" class="block text-sm font-medium text-slate-700 mb-1">Service concerné</label>
+                <div class="col-md-6">
+                    <label for="service_label" class="form-label fw-semibold">Service concerné</label>
                     <input type="text" id="service_label" name="service_label"
                            value="{{ old('service_label', $testimonial->service_label ?? '') }}"
-                           class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300">
+                           class="form-control">
                 </div>
 
-                <div>
-                    <label for="rating" class="block text-sm font-medium text-slate-700 mb-1">Note <span class="text-red-500">*</span></label>
-                    <select id="rating" name="rating"
-                            class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
-                            required>
-                        @for ($i = 5; $i >= 1; $i--)
+                <div class="col-md-3">
+                    <label for="rating" class="form-label fw-semibold">Note <span class="text-danger">*</span></label>
+                    <select id="rating" name="rating" class="form-select" required>
+                        @for($i = 5; $i >= 1; $i--)
                             <option value="{{ $i }}" @selected(old('rating', $testimonial->rating) == $i)>
                                 {{ $i }} étoile{{ $i > 1 ? 's' : '' }}
                             </option>
                         @endfor
                     </select>
                 </div>
+
+                <div class="col-md-3">
+                    <label for="source" class="form-label fw-semibold">Source <span class="text-danger">*</span></label>
+                    <select id="source" name="source" class="form-select" required>
+                        <option value="manual" @selected(old('source', $testimonial->source) === 'manual')>Manuel</option>
+                        <option value="google" @selected(old('source', $testimonial->source) === 'google')>Google</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <label for="content" class="form-label fw-semibold">Contenu du témoignage <span class="text-danger">*</span></label>
+                    <textarea id="content" name="content" rows="5" maxlength="1000"
+                              class="form-control" required>{{ old('content', $testimonial->content) }}</textarea>
+                    <div class="form-text">Max 1000 caractères.</div>
+                </div>
             </div>
 
-            <div>
-                <label for="content" class="block text-sm font-medium text-slate-700 mb-1">Contenu du témoignage <span class="text-red-500">*</span></label>
-                <textarea id="content" name="content" rows="5" maxlength="1000"
-                          class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
-                          required>{{ old('content', $testimonial->content) }}</textarea>
-                <p class="mt-1 text-xs text-slate-400">Max 1000 caractères</p>
-            </div>
+            <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap gap-3">
+                {{-- Delete --}}
+                <form action="{{ \App\Support\CentralAppUrl::admin('testimonials/'.$testimonial->id) }}" method="POST"
+                      onsubmit="return confirm('Supprimer ce témoignage définitivement ?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="admin-btn admin-btn-danger">
+                        <i class="bi bi-trash3-fill me-1"></i>Supprimer
+                    </button>
+                </form>
 
+                {{-- Save / Cancel --}}
+                <div class="admin-actions">
+                    <a href="{{ \App\Support\CentralAppUrl::admin('testimonials') }}" class="admin-btn admin-btn-secondary">
+                        Annuler
+                    </a>
+                    <button type="submit" class="admin-btn admin-btn-primary">
+                        <i class="bi bi-save me-1"></i>Enregistrer
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <div class="mt-6 flex items-center justify-between">
-            <form action="{{ route('admin.testimonials.destroy', $testimonial->id) }}" method="POST"
-                  onsubmit="return confirm('Supprimer ce témoignage ?')">
-                @csrf
-                @method('DELETE')
-                <button type="submit"
-                        class="rounded-2xl border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">
-                    Supprimer
-                </button>
-            </form>
-
-            <div class="flex items-center gap-3">
-                <a href="{{ route('admin.testimonials.index') }}"
-                   class="rounded-2xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                    Annuler
-                </a>
-                <button type="submit"
-                        class="rounded-2xl bg-slate-900 text-white px-6 py-2.5 text-sm font-medium hover:bg-slate-800 transition-colors">
-                    Enregistrer
-                </button>
-            </div>
-        </div>
     </form>
-
 </div>
 @endsection

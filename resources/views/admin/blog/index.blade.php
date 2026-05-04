@@ -2,77 +2,115 @@
 @section('title', 'Blog')
 
 @section('content')
-<div class="space-y-6">
+<div class="d-grid gap-4">
 
-    {{-- Header --}}
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-bold text-slate-900">Blog</h1>
-            <p class="mt-1 text-sm text-slate-500">Gérez les articles de votre blog.</p>
-        </div>
-        <a href="{{ route('admin.blog.create') }}"
-           class="rounded-2xl bg-slate-900 text-white px-4 py-2 text-sm font-medium hover:bg-slate-800 transition-colors">
-            + Nouvel article
-        </a>
-    </div>
+    {{-- Hero banner --}}
+    <section class="admin-panel admin-panel-dark p-4 p-lg-5">
+        <p class="admin-kicker" style="color:rgba(255,244,232,.72);">Contenu</p>
+        <h1 class="admin-page-title" style="color:#fff7ed;">Blog</h1>
+        <p class="admin-page-copy" style="color:rgba(248,244,236,.78);">Rédigez et publiez des articles pour améliorer votre référencement naturel et informer vos clients.</p>
+    </section>
 
-    {{-- Success alert --}}
-    @if (session('status'))
-        <div class="rounded-2xl bg-green-50 border border-green-200 text-green-800 px-4 py-3 text-sm">
-            {{ session('status') }}
-        </div>
+    {{-- Alerts --}}
+    @if(session('status'))
+        <div class="admin-alert">{{ session('status') }}</div>
     @endif
 
-    {{-- Posts table --}}
-    <div class="rounded-[2rem] bg-white p-6 shadow-sm">
-        @if ($posts->isEmpty())
-            <p class="text-sm text-slate-500 text-center py-8">Aucun article pour le moment.</p>
+    {{-- Stats row --}}
+    @php
+        $total     = $posts->total();
+        $published = $posts->getCollection()->where('status','published')->count();
+        $draft     = $posts->getCollection()->where('status','draft')->count();
+    @endphp
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="admin-panel admin-stat-card">
+                <p class="admin-stat-label">Total articles</p>
+                <p class="admin-stat-value">{{ $total }}</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="admin-panel admin-stat-card">
+                <p class="admin-stat-label">Publiés</p>
+                <p class="admin-stat-value">{{ $published }}</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="admin-panel admin-stat-card">
+                <p class="admin-stat-label">Brouillons</p>
+                <p class="admin-stat-value">{{ $draft }}</p>
+            </div>
+        </div>
+    </div>
+
+    {{-- Table panel --}}
+    <div class="admin-panel admin-panel-strong p-4 p-lg-5">
+        <div class="admin-section-head">
+            <div>
+                <h2 class="admin-section-title">Tous les articles</h2>
+                <p class="admin-section-copy">{{ $total }} article{{ $total > 1 ? 's' : '' }} au total.</p>
+            </div>
+            <div class="admin-actions">
+                <a href="{{ \App\Support\CentralAppUrl::admin('blog/create') }}" class="admin-btn admin-btn-primary">
+                    <i class="bi bi-plus-lg me-1"></i>Nouvel article
+                </a>
+            </div>
+        </div>
+
+        @if($posts->isEmpty())
+            <div class="admin-note text-center py-5 mt-3">
+                <i class="bi bi-journal-richtext fs-3 d-block mb-2 text-muted"></i>
+                <p class="mb-0">Aucun article pour le moment.</p>
+            </div>
         @else
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left">
+            <div class="admin-table-wrap mt-3">
+                <table class="admin-table">
                     <thead>
-                        <tr class="border-b border-slate-100">
-                            <th class="pb-3 font-medium text-slate-500">Titre</th>
-                            <th class="pb-3 font-medium text-slate-500">Catégorie</th>
-                            <th class="pb-3 font-medium text-slate-500 text-center">Statut</th>
-                            <th class="pb-3 font-medium text-slate-500">Date</th>
-                            <th class="pb-3 font-medium text-slate-500 text-right">Actions</th>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Catégorie</th>
+                            <th>Statut</th>
+                            <th>Date</th>
+                            <th class="text-end">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-50">
-                        @foreach ($posts as $post)
-                            <tr class="hover:bg-slate-50/50 transition-colors">
-                                <td class="py-3 font-medium text-slate-900 max-w-[280px]">
-                                    <span class="truncate block">{{ $post->title }}</span>
+                    <tbody>
+                        @foreach($posts as $post)
+                            <tr>
+                                <td style="max-width:280px;">
+                                    <span class="fw-semibold d-inline-block text-truncate" style="max-width:270px;">
+                                        {{ Str::limit($post->title, 60) }}
+                                    </span>
                                 </td>
-                                <td class="py-3 text-slate-600">{{ $post->category ?: '—' }}</td>
-                                <td class="py-3 text-center">
-                                    @if ($post->status === 'published')
-                                        <span class="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700">
-                                            Publié
-                                        </span>
+                                <td>
+                                    @if($post->category)
+                                        <span class="admin-badge admin-badge-muted">{{ $post->category }}</span>
                                     @else
-                                        <span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">
-                                            Brouillon
-                                        </span>
+                                        <span class="text-muted">—</span>
                                     @endif
                                 </td>
-                                <td class="py-3 text-slate-500 text-xs">
-                                    {{ $post->published_at ? $post->published_at->format('d/m/Y') : $post->created_at->format('d/m/Y') }}
+                                <td>
+                                    @if($post->status === 'published')
+                                        <span class="admin-badge admin-badge-success"><i class="bi bi-check-lg me-1"></i>Publié</span>
+                                    @else
+                                        <span class="admin-badge admin-badge-muted">Brouillon</span>
+                                    @endif
                                 </td>
-                                <td class="py-3 text-right">
-                                    <div class="flex items-center justify-end gap-2">
-                                        <a href="{{ route('admin.blog.edit', $post->id) }}"
-                                           class="rounded-2xl border border-slate-300 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                                            Modifier
+                                <td style="font-size:.82rem;color:var(--admin-muted);">
+                                    {{ ($post->published_at ?? $post->created_at)->format('d/m/Y') }}
+                                </td>
+                                <td class="text-end">
+                                    <div class="admin-actions justify-content-end">
+                                        <a href="{{ \App\Support\CentralAppUrl::admin('blog/'.$post->id.'/edit') }}"
+                                           class="admin-btn admin-btn-warning" style="padding:.45rem .85rem;font-size:.8rem;">
+                                            <i class="bi bi-pencil-fill me-1"></i>Modifier
                                         </a>
-                                        <form action="{{ route('admin.blog.destroy', $post->id) }}" method="POST" class="inline"
+                                        <form action="{{ \App\Support\CentralAppUrl::admin('blog/'.$post->id) }}" method="POST" class="d-inline"
                                               onsubmit="return confirm('Supprimer définitivement cet article ?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit"
-                                                    class="rounded-2xl border border-red-200 px-4 py-2 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors">
-                                                Supprimer
+                                            <button type="submit" class="admin-btn admin-btn-danger" style="padding:.45rem .85rem;font-size:.8rem;">
+                                                <i class="bi bi-trash3-fill me-1"></i>Supprimer
                                             </button>
                                         </form>
                                     </div>
@@ -83,8 +121,8 @@
                 </table>
             </div>
 
-            @if ($posts->hasPages())
-                <div class="mt-6">
+            @if($posts->hasPages())
+                <div class="mt-4">
                     {{ $posts->links() }}
                 </div>
             @endif
