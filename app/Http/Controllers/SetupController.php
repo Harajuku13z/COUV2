@@ -11,6 +11,10 @@ class SetupController extends Controller
 {
     public function __invoke(InstallationState $installationState)
     {
+        if ($installationState->isConfigured()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         if ($this->hasOnboardingTables()) {
             return view('setup.wizard');
         }
