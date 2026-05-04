@@ -10,13 +10,28 @@
     <div class="flex min-h-screen">
         <aside class="hidden w-72 shrink-0 bg-slate-950 px-6 py-8 text-slate-100 lg:block">
             <a href="{{ route('admin.dashboard') }}" class="text-lg font-semibold">Tableau de bord</a>
-            <nav class="mt-10 space-y-2 text-sm">
-                <a href="{{ route('admin.dashboard') }}" class="block rounded-2xl px-4 py-3 hover:bg-slate-900">Vue d'ensemble</a>
-                <a href="{{ route('admin.pages.index') }}" class="block rounded-2xl px-4 py-3 hover:bg-slate-900">Pages</a>
-                <a href="{{ route('admin.leads.index') }}" class="block rounded-2xl px-4 py-3 hover:bg-slate-900">Leads</a>
-                <a href="{{ route('admin.branding.edit') }}" class="block rounded-2xl px-4 py-3 hover:bg-slate-900">Branding</a>
-                <a href="{{ route('admin.api-settings.edit') }}" class="block rounded-2xl px-4 py-3 hover:bg-slate-900">API</a>
-                <a href="{{ route('onboarding') }}" class="block rounded-2xl px-4 py-3 hover:bg-slate-900">Onboarding</a>
+            <nav class="mt-8 space-y-1 text-sm">
+                @php
+                    $navItems = [
+                        ['route' => 'admin.dashboard',        'label' => 'Vue d\'ensemble'],
+                        ['route' => 'admin.company.edit',     'label' => 'Mon entreprise'],
+                        ['route' => 'admin.zones.index',      'label' => 'Zones & villes'],
+                        ['route' => 'admin.services.index',   'label' => 'Services'],
+                        ['route' => 'admin.pages.index',      'label' => 'Pages SEO'],
+                        ['route' => 'admin.leads.index',      'label' => 'Leads'],
+                        ['route' => 'admin.testimonials.index','label' => 'Témoignages'],
+                        ['route' => 'admin.blog.index',       'label' => 'Blog'],
+                        ['route' => 'admin.branding.edit',    'label' => 'Branding'],
+                        ['route' => 'admin.api-settings.edit','label' => 'Clés API'],
+                    ];
+                @endphp
+                @foreach($navItems as $item)
+                    <a href="{{ route($item['route']) }}"
+                       class="block rounded-2xl px-4 py-2.5 transition-colors
+                              {{ request()->routeIs($item['route']) ? 'bg-slate-700 text-white' : 'hover:bg-slate-900' }}">
+                        {{ $item['label'] }}
+                    </a>
+                @endforeach
             </nav>
         </aside>
         <div class="flex-1">
