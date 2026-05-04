@@ -2,37 +2,35 @@
 @section('title', 'Villes — ' . $department->name)
 
 @section('content')
-<div class="space-y-6">
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-            <a href="{{ route('admin.zones.index') }}"
-               class="mb-2 inline-flex items-center gap-1 text-sm text-slate-500 transition hover:text-slate-700">
-                &larr; Retour aux zones
-            </a>
-            <h1 class="text-2xl font-bold text-slate-900">Département {{ $department->code }} — {{ $department->name }}</h1>
-            <p class="mt-1 text-sm text-slate-500">Active, priorise, marque en favori ou supprime les villes de ce département.</p>
+<div class="space-y-8">
+    <section class="admin-panel admin-panel-dark overflow-hidden">
+        <div class="grid gap-8 px-6 py-7 lg:grid-cols-[1.15fr_0.85fr] lg:px-8">
+            <div>
+                <a href="{{ route('admin.zones.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-white/70 no-underline transition hover:text-white">
+                    &larr; Retour aux zones
+                </a>
+                <p class="admin-kicker mt-4" style="color:rgba(255,244,232,0.72);">Département {{ $department->code }}</p>
+                <h1 class="admin-page-title" style="color:#fff7ed;">{{ $department->name }}</h1>
+                <p class="admin-page-copy" style="color:rgba(248,244,236,0.78);">
+                    Active, priorise, marque en favori ou retire les villes de ce département à partir d’une vue beaucoup plus opérationnelle.
+                </p>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div class="rounded-[26px] border border-white/10 bg-white/6 p-5">
+                    <p class="text-sm font-semibold text-white/70">Villes actives</p>
+                    <p class="mt-3 text-4xl font-extrabold tracking-tight text-white">{{ number_format($cityStats['active']) }}</p>
+                </div>
+                <div class="rounded-[26px] border border-white/10 bg-white/6 p-5">
+                    <p class="text-sm font-semibold text-white/70">Villes favorites</p>
+                    <p class="mt-3 text-4xl font-extrabold tracking-tight text-white">{{ number_format($cityStats['favorites']) }}</p>
+                </div>
+            </div>
         </div>
-        <div class="flex flex-wrap gap-2">
-            <form action="{{ route('admin.zones.import') }}" method="POST">
-                @csrf
-                <input type="hidden" name="dept_code" value="{{ $department->code }}">
-                <button type="submit"
-                        class="rounded-2xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
-                    Réimporter le département
-                </button>
-            </form>
-            <form action="{{ route('admin.zones.toggle', $department->code) }}" method="POST">
-                @csrf
-                <button type="submit"
-                        class="rounded-2xl border border-amber-300 px-4 py-2 text-sm font-medium text-amber-700 transition hover:bg-amber-50">
-                    {{ $cityStats['active'] > 0 ? 'Tout désactiver' : 'Tout activer' }}
-                </button>
-            </form>
-        </div>
-    </div>
+    </section>
 
     @if ($errors->any())
-        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+        <div class="admin-alert admin-alert-error">
             <ul class="list-disc list-inside space-y-1">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -41,46 +39,62 @@
         </div>
     @endif
 
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <div class="rounded-[2rem] bg-white p-6 shadow-sm">
-            <p class="text-sm text-slate-500">Villes importées</p>
-            <p class="mt-1 text-3xl font-bold text-slate-900">{{ number_format($cityStats['total']) }}</p>
-        </div>
-        <div class="rounded-[2rem] bg-white p-6 shadow-sm">
-            <p class="text-sm text-slate-500">Actives</p>
-            <p class="mt-1 text-3xl font-bold text-slate-900">{{ number_format($cityStats['active']) }}</p>
-        </div>
-        <div class="rounded-[2rem] bg-white p-6 shadow-sm">
-            <p class="text-sm text-slate-500">Favorites</p>
-            <p class="mt-1 text-3xl font-bold text-slate-900">{{ number_format($cityStats['favorites']) }}</p>
-        </div>
-        <div class="rounded-[2rem] bg-white p-6 shadow-sm">
-            <p class="text-sm text-slate-500">Priorité SEO 8+</p>
-            <p class="mt-1 text-3xl font-bold text-slate-900">{{ number_format($cityStats['priority']) }}</p>
-        </div>
+    <div class="admin-stat-grid md:grid-cols-2 xl:grid-cols-4">
+        <article class="admin-panel admin-panel-strong admin-stat-card">
+            <p class="admin-stat-label">Villes importées</p>
+            <p class="admin-stat-value">{{ number_format($cityStats['total']) }}</p>
+        </article>
+        <article class="admin-panel admin-panel-strong admin-stat-card">
+            <p class="admin-stat-label">Actives</p>
+            <p class="admin-stat-value">{{ number_format($cityStats['active']) }}</p>
+        </article>
+        <article class="admin-panel admin-panel-strong admin-stat-card">
+            <p class="admin-stat-label">Favorites</p>
+            <p class="admin-stat-value">{{ number_format($cityStats['favorites']) }}</p>
+        </article>
+        <article class="admin-panel admin-panel-strong admin-stat-card">
+            <p class="admin-stat-label">Priorité SEO 8+</p>
+            <p class="admin-stat-value">{{ number_format($cityStats['priority']) }}</p>
+        </article>
     </div>
 
-    <div class="rounded-[2rem] bg-white p-6 shadow-sm">
-        <form method="GET" action="{{ route('admin.zones.cities', $department->code) }}" class="grid gap-4 lg:grid-cols-[2fr_1fr_1fr_1fr_auto]">
+    <section class="admin-panel admin-panel-strong p-6">
+        <div class="admin-section-head">
             <div>
-                <label for="q" class="mb-1 block text-sm font-medium text-slate-700">Recherche</label>
-                <input type="text" id="q" name="q" value="{{ request('q') }}"
-                       placeholder="Ville, code postal ou code INSEE"
-                       class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300">
+                <h2 class="admin-section-title">Filtres</h2>
+                <p class="admin-section-copy">Affiche uniquement les villes qui méritent ton attention immédiate.</p>
+            </div>
+            <div class="admin-actions">
+                <form action="{{ route('admin.zones.import') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="dept_code" value="{{ $department->code }}">
+                    <button type="submit" class="admin-btn admin-btn-secondary">Réimporter le département</button>
+                </form>
+                <form action="{{ route('admin.zones.toggle', $department->code) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="admin-btn admin-btn-warning">
+                        {{ $cityStats['active'] > 0 ? 'Tout désactiver' : 'Tout activer' }}
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <form method="GET" action="{{ route('admin.zones.cities', $department->code) }}" class="grid gap-4 xl:grid-cols-[1.4fr_0.85fr_0.85fr_0.85fr_auto]">
+            <div>
+                <label for="q" class="mb-2 block text-sm font-semibold text-slate-700">Recherche</label>
+                <input type="text" id="q" name="q" value="{{ request('q') }}" placeholder="Ville, code postal ou code INSEE">
             </div>
             <div>
-                <label for="status" class="mb-1 block text-sm font-medium text-slate-700">Statut</label>
-                <select id="status" name="status"
-                        class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300">
+                <label for="status" class="mb-2 block text-sm font-semibold text-slate-700">Statut</label>
+                <select id="status" name="status">
                     <option value="all" @selected(request('status', 'all') === 'all')>Toutes</option>
                     <option value="active" @selected(request('status') === 'active')>Actives</option>
                     <option value="inactive" @selected(request('status') === 'inactive')>Inactives</option>
                 </select>
             </div>
             <div>
-                <label for="priority" class="mb-1 block text-sm font-medium text-slate-700">Priorité min</label>
-                <select id="priority" name="priority"
-                        class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300">
+                <label for="priority" class="mb-2 block text-sm font-semibold text-slate-700">Priorité min</label>
+                <select id="priority" name="priority">
                     <option value="">Toutes</option>
                     @for ($i = 10; $i >= 1; $i--)
                         <option value="{{ $i }}" @selected((string) request('priority') === (string) $i)>{{ $i }}+</option>
@@ -88,41 +102,34 @@
                 </select>
             </div>
             <div>
-                <label for="sort" class="mb-1 block text-sm font-medium text-slate-700">Tri</label>
-                <select id="sort" name="sort"
-                        class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300">
+                <label for="sort" class="mb-2 block text-sm font-semibold text-slate-700">Tri</label>
+                <select id="sort" name="sort">
                     <option value="priority" @selected(request('sort', 'priority') === 'priority')>Priorité SEO</option>
                     <option value="population" @selected(request('sort') === 'population')>Population</option>
                     <option value="name" @selected(request('sort') === 'name')>Nom</option>
                 </select>
             </div>
             <div class="flex items-end">
-                <button type="submit"
-                        class="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800">
-                    Filtrer
-                </button>
+                <button type="submit" class="admin-btn admin-btn-primary w-full">Filtrer</button>
             </div>
-            <label class="inline-flex items-center gap-2 text-sm text-slate-600">
+            <label class="inline-flex items-center gap-2 text-sm font-semibold text-slate-600">
                 <input type="checkbox" name="favorites_only" value="1" @checked(request()->boolean('favorites_only'))
                        class="rounded border-slate-300 text-slate-900">
                 Favoris uniquement
             </label>
         </form>
-    </div>
+    </section>
 
-    <form action="{{ route('admin.zones.cities.bulk', $department->code) }}" method="POST" class="space-y-4">
+    <form action="{{ route('admin.zones.cities.bulk', $department->code) }}" method="POST">
         @csrf
-
-        <div class="rounded-[2rem] bg-white p-6 shadow-sm">
-            <div class="flex flex-col gap-4 border-b border-slate-100 pb-4 lg:flex-row lg:items-center lg:justify-between">
+        <section class="admin-panel admin-panel-strong p-6">
+            <div class="admin-section-head">
                 <div>
-                    <h2 class="text-base font-semibold text-slate-800">Gestion des villes</h2>
-                    <p class="mt-1 text-sm text-slate-500">Tu peux traiter plusieurs villes d’un coup ou intervenir ligne par ligne.</p>
+                    <h2 class="admin-section-title">Gestion des villes</h2>
+                    <p class="admin-section-copy">Travaille à la ville ou en lot selon la pression opérationnelle du moment.</p>
                 </div>
                 <div class="flex flex-col gap-3 sm:flex-row">
-                    <select name="action"
-                            class="rounded-2xl border border-slate-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
-                            required>
+                    <select name="action" required style="min-width:220px;">
                         <option value="">Action groupée</option>
                         <option value="activate">Activer</option>
                         <option value="deactivate">Désactiver</option>
@@ -130,9 +137,7 @@
                         <option value="unfavorite">Retirer des favorites</option>
                         <option value="delete">Supprimer</option>
                     </select>
-                    <button type="submit"
-                            onclick="return confirm('Appliquer cette action aux villes sélectionnées ?');"
-                            class="rounded-2xl border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+                    <button type="submit" onclick="return confirm('Appliquer cette action aux villes sélectionnées ?');" class="admin-btn admin-btn-secondary">
                         Appliquer
                     </button>
                 </div>
@@ -141,96 +146,81 @@
             @if ($cities->isEmpty())
                 <p class="py-8 text-center text-sm text-slate-500">Aucune ville trouvée pour ces filtres.</p>
             @else
-                <div class="mt-4 overflow-x-auto">
-                    <table class="w-full text-left text-sm">
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
                         <thead>
-                            <tr class="border-b border-slate-100">
-                                <th class="pb-3">
-                                    <input type="checkbox" id="select-all-cities" class="rounded border-slate-300 text-slate-900">
-                                </th>
-                                <th class="pb-3 font-medium text-slate-500">Ville</th>
-                                <th class="pb-3 font-medium text-slate-500">Codes</th>
-                                <th class="pb-3 font-medium text-slate-500 text-right">Population</th>
-                                <th class="pb-3 font-medium text-slate-500 text-center">Priorité</th>
-                                <th class="pb-3 font-medium text-slate-500 text-center">Favori</th>
-                                <th class="pb-3 font-medium text-slate-500 text-center">Statut</th>
-                                <th class="pb-3 font-medium text-slate-500 text-right">Pages</th>
-                                <th class="pb-3 font-medium text-slate-500 text-right">Leads</th>
-                                <th class="pb-3 font-medium text-slate-500 text-right">Actions</th>
+                            <tr>
+                                <th><input type="checkbox" id="select-all-cities" class="rounded border-slate-300 text-slate-900"></th>
+                                <th>Ville</th>
+                                <th>Codes</th>
+                                <th class="text-right">Population</th>
+                                <th class="text-center">Priorité</th>
+                                <th class="text-center">Favori</th>
+                                <th class="text-center">Statut</th>
+                                <th class="text-right">Pages</th>
+                                <th class="text-right">Leads</th>
+                                <th class="text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-50">
+                        <tbody>
                             @foreach ($cities as $city)
-                                <tr class="align-top transition-colors hover:bg-slate-50/50">
-                                    <td class="py-4">
-                                        <input type="checkbox" name="city_ids[]" value="{{ $city->id }}"
-                                               class="city-checkbox rounded border-slate-300 text-slate-900">
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" name="city_ids[]" value="{{ $city->id }}" class="city-checkbox rounded border-slate-300 text-slate-900">
                                     </td>
-                                    <td class="py-4">
+                                    <td>
                                         <p class="font-semibold text-slate-900">{{ $city->name }}</p>
                                         <p class="mt-1 text-xs text-slate-500">{{ $city->slug }}</p>
                                     </td>
-                                    <td class="py-4">
+                                    <td>
                                         <p class="font-mono text-xs text-slate-600">INSEE {{ $city->insee_code ?? '—' }}</p>
                                         <p class="font-mono text-xs text-slate-500">CP {{ $city->postal_code ?? '—' }}</p>
                                     </td>
-                                    <td class="py-4 text-right text-slate-700">
+                                    <td class="text-right font-semibold text-slate-700">
                                         {{ $city->population ? number_format($city->population) : '—' }}
                                     </td>
-                                    <td class="py-4 text-center">
+                                    <td class="text-center">
                                         <form action="{{ route('admin.zones.cities.priority', $city->id) }}" method="POST" class="inline-flex items-center gap-2">
                                             @csrf
-                                            <select name="seo_priority"
-                                                    class="rounded-xl border border-slate-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-slate-300">
+                                            <select name="seo_priority" style="width:auto;min-width:72px;padding:10px 12px;border-radius:14px;">
                                                 @for ($i = 1; $i <= 10; $i++)
                                                     <option value="{{ $i }}" @selected((int) ($city->seo_priority ?? 5) === $i)>{{ $i }}</option>
                                                 @endfor
                                             </select>
-                                            <button type="submit"
-                                                    class="rounded-xl border border-slate-300 px-2 py-1 text-xs text-slate-600 transition hover:bg-slate-50">
-                                                OK
-                                            </button>
+                                            <button type="submit" class="admin-btn admin-btn-secondary" style="padding:10px 14px;">OK</button>
                                         </form>
                                     </td>
-                                    <td class="py-4 text-center">
+                                    <td class="text-center">
                                         <form action="{{ route('admin.zones.cities.favorite', $city->id) }}" method="POST">
                                             @csrf
                                             <button type="submit"
-                                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full border transition {{ in_array($city->id, $favoriteCityIds, true) ? 'border-amber-300 bg-amber-50 text-amber-700' : 'border-slate-300 text-slate-400 hover:bg-slate-50' }}"
+                                                    class="inline-flex h-10 w-10 items-center justify-center rounded-full border transition {{ in_array($city->id, $favoriteCityIds, true) ? 'border-amber-300 bg-amber-50 text-amber-700' : 'border-slate-300 bg-white text-slate-400 hover:bg-slate-50' }}"
                                                     title="{{ in_array($city->id, $favoriteCityIds, true) ? 'Retirer des favorites' : 'Ajouter aux favorites' }}">
                                                 ★
                                             </button>
                                         </form>
                                     </td>
-                                    <td class="py-4 text-center">
+                                    <td class="text-center">
                                         @if ($city->is_active)
-                                            <span class="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700">
-                                                Active
-                                            </span>
+                                            <span class="admin-badge admin-badge-success">Active</span>
                                         @else
-                                            <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500">
-                                                Inactive
-                                            </span>
+                                            <span class="admin-badge admin-badge-muted">Inactive</span>
                                         @endif
                                     </td>
-                                    <td class="py-4 text-right text-slate-700">{{ number_format($city->pages_count) }}</td>
-                                    <td class="py-4 text-right text-slate-700">{{ number_format($city->leads_count) }}</td>
-                                    <td class="py-4">
+                                    <td class="text-right font-semibold text-slate-700">{{ number_format($city->pages_count) }}</td>
+                                    <td class="text-right font-semibold text-slate-700">{{ number_format($city->leads_count) }}</td>
+                                    <td>
                                         <div class="flex flex-wrap justify-end gap-2">
                                             <form action="{{ route('admin.zones.cities.toggle', $city->id) }}" method="POST">
                                                 @csrf
-                                                <button type="submit"
-                                                        class="rounded-2xl border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50">
+                                                <button type="submit" class="admin-btn admin-btn-secondary">
                                                     {{ $city->is_active ? 'Désactiver' : 'Activer' }}
                                                 </button>
                                             </form>
                                             <form action="{{ route('admin.zones.cities.destroy', $city->id) }}" method="POST" onsubmit="return confirm('Supprimer cette ville ?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit"
-                                                        class="rounded-2xl border border-red-300 px-3 py-2 text-xs font-medium text-red-700 transition hover:bg-red-50">
-                                                    Supprimer
-                                                </button>
+                                                <button type="submit" class="admin-btn admin-btn-danger">Supprimer</button>
                                             </form>
                                         </div>
                                     </td>
@@ -246,7 +236,7 @@
                     </div>
                 @endif
             @endif
-        </div>
+        </section>
     </form>
 </div>
 @endsection
@@ -257,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const selectAll = document.getElementById('select-all-cities');
     const checkboxes = Array.from(document.querySelectorAll('.city-checkbox'));
 
-    if (! selectAll || checkboxes.length === 0) {
+    if (!selectAll || checkboxes.length === 0) {
         return;
     }
 
