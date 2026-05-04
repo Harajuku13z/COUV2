@@ -6,48 +6,56 @@ namespace App\Services;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class ImageOptimizationService
 {
+    private ImageManager $manager;
+
+    public function __construct()
+    {
+        $this->manager = new ImageManager(new Driver());
+    }
+
     public function optimizeLogo(UploadedFile $file): array
     {
         $baseName = pathinfo($file->hashName(), PATHINFO_FILENAME);
         $directory = 'branding/logos';
 
-        $fullPath = $directory.'/'.$baseName.'-full.png';
-        $mediumPath = $directory.'/'.$baseName.'-200.png';
+        $fullPath    = $directory.'/'.$baseName.'-full.png';
+        $mediumPath  = $directory.'/'.$baseName.'-200.png';
         $faviconPath = $directory.'/'.$baseName.'-64.png';
 
-        $source = Image::read($file->getRealPath());
+        $source = $this->manager->read($file->getRealPath());
 
         Storage::disk('public')->put($fullPath, (string) $source->scaleDown(width: 400)->toPng());
         Storage::disk('public')->put($mediumPath, (string) $source->scaleDown(width: 200)->toPng());
         Storage::disk('public')->put($faviconPath, (string) $source->scaleDown(width: 64, height: 64)->toPng());
 
         return [
-            'full' => $fullPath,
-            'medium' => $mediumPath,
+            'full'    => $fullPath,
+            'medium'  => $mediumPath,
             'favicon' => $faviconPath,
         ];
     }
 
     public function optimizePhoto(UploadedFile $file): array
     {
-        $baseName = pathinfo($file->hashName(), PATHINFO_FILENAME);
+        $baseName  = pathinfo($file->hashName(), PATHINFO_FILENAME);
         $directory = 'optimized/photos';
 
         $jpegPath = $directory.'/'.$baseName.'.jpg';
         $webpPath = $directory.'/'.$baseName.'.webp';
 
-        $image = Image::read($file->getRealPath())->scaleDown(width: 1200, height: 1200);
+        $image = $this->manager->read($file->getRealPath())->scaleDown(width: 1200, height: 1200);
 
         Storage::disk('public')->put($jpegPath, (string) $image->toJpeg(82));
         Storage::disk('public')->put($webpPath, (string) $image->toWebp(82));
 
         return [
-            'jpeg' => $jpegPath,
-            'webp' => $webpPath,
+            'jpeg'        => $jpegPath,
+            'webp'        => $webpPath,
             'placeholder' => $this->generatePlaceholder($jpegPath),
         ];
     }
@@ -60,7 +68,7 @@ class ImageOptimizationService
             return $webpPath;
         }
 
-        $image = Image::read(Storage::disk('public')->path($path));
+        $image = $this->manager->read(Storage::disk('public')->path($path));
         Storage::disk('public')->put($webpPath, (string) $image->toWebp(82));
 
         return $webpPath;
@@ -74,7 +82,7 @@ class ImageOptimizationService
             return $placeholderPath;
         }
 
-        $image = Image::read(Storage::disk('public')->path($path))->scaleDown(width: 20, height: 20)->blur(8);
+        $image = $this->manager->read(Storage::disk('public')->path($path))->scaleDown(width: 20, height: 20)->blur(8);
         Storage::disk('public')->put($placeholderPath, (string) $image->toJpeg(35));
 
         return $placeholderPath;
