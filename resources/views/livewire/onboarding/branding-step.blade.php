@@ -12,6 +12,17 @@
             <div class="setup-progress-bar" style="width: 66.666%"></div>
         </div>
 
+        @if ($errors->any())
+            <div class="alert alert-danger border-0 rounded-4 mt-4 mb-0">
+                <div class="fw-bold mb-2">Certaines informations sont a corriger.</div>
+                <ul class="mb-0 ps-3">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <div class="row g-4 mt-1">
             <div class="col-lg-8">
                 <div class="row g-4">

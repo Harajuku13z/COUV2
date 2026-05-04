@@ -48,9 +48,9 @@ class BrandingStep extends StepComponent
             'brand_accent' => ['required', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'heading_font' => ['required', 'string', 'max:255'],
             'body_font' => ['required', 'string', 'max:255'],
-            'facebook_url' => ['nullable', 'url'],
-            'instagram_url' => ['nullable', 'url'],
-            'gbp_url' => ['nullable', 'url'],
+            'facebook_url' => ['nullable', 'string', 'max:500'],
+            'instagram_url' => ['nullable', 'string', 'max:500'],
+            'gbp_url' => ['nullable', 'string', 'max:500'],
             'logo' => ['nullable', 'image', 'max:2048'],
             'favicon' => ['nullable', 'file', 'mimes:ico,png', 'max:500'],
         ]);

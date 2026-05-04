@@ -13,12 +13,11 @@ use App\Models\WeatherEvent;
 use App\Jobs\GenerateSitemapJob;
 use App\Jobs\RefreshWeatherDataJob;
 use Illuminate\Http\RedirectResponse;
-use Laravel\Horizon\Contracts\JobRepository;
-use Laravel\Horizon\Contracts\MetricsRepository;
+use Throwable;
 
 class DashboardController extends Controller
 {
-    public function index(JobRepository $jobs, MetricsRepository $metrics)
+    public function index()
     {
         $leadCountsByDay = collect(range(6, 0))
             ->map(fn (int $offset) => now()->subDays($offset))
@@ -44,11 +43,20 @@ class DashboardController extends Controller
             'top_cities' => Lead::query()->selectRaw('city_label, count(*) as total')->whereNotNull('city_label')->groupBy('city_label')->orderByDesc('total')->limit(5)->get(),
             'top_services' => Lead::query()->selectRaw('service_requested, count(*) as total')->whereNotNull('service_requested')->groupBy('service_requested')->orderByDesc('total')->limit(5)->get(),
             'openai_cost_month' => (float) AiGeneration::query()->where('created_at', '>=', now()->startOfMonth())->sum('cost_usd'),
-            'jobs' => [
-                'pending' => method_exists($jobs, 'count') ? $jobs->count() : null,
-                'failed' => method_exists($jobs, 'countRecentlyFailed') ? $jobs->countRecentlyFailed() : null,
-                'throughput' => method_exists($metrics, 'jobsProcessedPerMinute') ? $metrics->jobsProcessedPerMinute() : [],
-            ],
+            'jobs' => (function () {
+                try {
+                    $jobs    = app(\Laravel\Horizon\Contracts\JobRepository::class);
+                    $metrics = app(\Laravel\Horizon\Contracts\MetricsRepository::class);
+
+                    return [
+                        'pending'    => method_exists($jobs, 'count') ? $jobs->count() : null,
+                        'failed'     => method_exists($jobs, 'countRecentlyFailed') ? $jobs->countRecentlyFailed() : null,
+                        'throughput' => method_exists($metrics, 'jobsProcessedPerMinute') ? $metrics->jobsProcessedPerMinute() : [],
+                    ];
+                } catch (Throwable) {
+                    return ['pending' => null, 'failed' => null, 'throughput' => []];
+                }
+            })(),
             'api_errors' => ApiErrorLog::query()->latest('occurred_at')->limit(10)->get(),
             'weather_events' => WeatherEvent::query()->with('city')->where('created_at', '>=', now()->subDays(7))->latest()->limit(7)->get(),
             'charts' => [
