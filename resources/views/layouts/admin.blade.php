@@ -293,8 +293,10 @@
         $navItems = [
             ['icon' => 'bi-grid-1x2-fill', 'url' => \App\Support\CentralAppUrl::admin(), 'path' => '/admin', 'label' => 'Vue d\'ensemble', 'meta' => 'KPI et activite'],
             ['icon' => 'bi-buildings-fill', 'url' => \App\Support\CentralAppUrl::admin('company'), 'path' => '/admin/company', 'label' => 'Entreprise', 'meta' => 'Profil et ton'],
+            ['icon' => 'bi-window-stack', 'url' => \App\Support\CentralAppUrl::admin('homepage'), 'path' => '/admin/homepage', 'label' => 'Accueil', 'meta' => 'Templates et contenus'],
             ['icon' => 'bi-geo-alt-fill', 'url' => \App\Support\CentralAppUrl::admin('zones'), 'path' => '/admin/zones', 'label' => 'Zones', 'meta' => 'Departements et villes'],
             ['icon' => 'bi-tools', 'url' => \App\Support\CentralAppUrl::admin('services'), 'path' => '/admin/services', 'label' => 'Services', 'meta' => 'Offres et activations'],
+            ['icon' => 'bi-images', 'url' => \App\Support\CentralAppUrl::admin('realizations'), 'path' => '/admin/realizations', 'label' => 'Realisations', 'meta' => 'Photos et chantiers'],
             ['icon' => 'bi-file-earmark-text-fill', 'url' => \App\Support\CentralAppUrl::admin('pages'), 'path' => '/admin/pages', 'label' => 'Pages SEO', 'meta' => 'Production locale'],
             ['icon' => 'bi-telephone-inbound-fill', 'url' => \App\Support\CentralAppUrl::admin('leads'), 'path' => '/admin/leads', 'label' => 'Leads', 'meta' => 'Demandes entrantes'],
             ['icon' => 'bi-stars', 'url' => \App\Support\CentralAppUrl::admin('testimonials'), 'path' => '/admin/testimonials', 'label' => 'Avis', 'meta' => 'Preuve sociale'],

@@ -8,8 +8,10 @@ use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\BrandingController;
 use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\HomepageController;
 use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\PageController;
+use App\Http\Controllers\Admin\RealizationController;
 use App\Http\Controllers\Admin\ServicesController;
 use App\Http\Controllers\Admin\TestimonialsController;
 use App\Http\Controllers\Admin\ZonesController;
@@ -82,6 +84,11 @@ foreach (config('tenancy.central_domains', []) as $domain) {
             Route::get('/company', [CompanyController::class, 'edit'])->name('company.edit');
             Route::post('/company', [CompanyController::class, 'update'])->name('company.update');
 
+            // Homepage
+            Route::get('/homepage', [HomepageController::class, 'edit'])->name('homepage.edit');
+            Route::post('/homepage', [HomepageController::class, 'update'])->name('homepage.update');
+            Route::post('/homepage/generate-ai', [HomepageController::class, 'generateAi'])->name('homepage.generate-ai');
+
             // Zones & Cities
             Route::get('/zones', [ZonesController::class, 'index'])->name('zones.index');
             Route::post('/zones/import', [ZonesController::class, 'import'])->name('zones.import');
@@ -104,6 +111,15 @@ foreach (config('tenancy.central_domains', []) as $domain) {
             Route::delete('/services/{id}', [ServicesController::class, 'destroy'])->name('services.destroy');
             Route::post('/services/{id}/toggle', [ServicesController::class, 'toggleActive'])->name('services.toggle');
             Route::post('/services/{id}/generate-pages', [ServicesController::class, 'generatePages'])->name('services.generate-pages');
+
+            // Realizations
+            Route::get('/realizations', [RealizationController::class, 'index'])->name('realizations.index');
+            Route::get('/realizations/create', [RealizationController::class, 'create'])->name('realizations.create');
+            Route::post('/realizations', [RealizationController::class, 'store'])->name('realizations.store');
+            Route::get('/realizations/{id}/edit', [RealizationController::class, 'edit'])->name('realizations.edit');
+            Route::put('/realizations/{id}', [RealizationController::class, 'update'])->name('realizations.update');
+            Route::delete('/realizations/{id}', [RealizationController::class, 'destroy'])->name('realizations.destroy');
+            Route::delete('/realizations/{realizationId}/photos/{mediaId}', [RealizationController::class, 'destroyPhoto'])->name('realizations.photos.destroy');
 
             // Testimonials
             Route::get('/testimonials', [TestimonialsController::class, 'index'])->name('testimonials.index');
