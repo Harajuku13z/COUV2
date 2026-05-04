@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Onboarding\Steps;
 
 use App\Models\Setting;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Spatie\LivewireWizard\Components\StepComponent;
 
@@ -21,7 +22,7 @@ class ApiKeysStep extends StepComponent
         $this->serpapi_valid = filled($this->serpapi_key) && strlen($this->serpapi_key) > 20;
     }
 
-    public function saveAndContinue(): void
+    public function saveAndContinue(): RedirectResponse
     {
         $this->validate([
             'openai_api_key' => ['nullable', 'string'],
