@@ -2,14 +2,14 @@
     <section class="setup-panel p-4 p-lg-5">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
             <div>
-                <div class="setup-kicker">Etape 5 sur 6</div>
+                <div class="setup-kicker">Etape 5 sur 5</div>
                 <h2 class="setup-section-title mt-3 mb-0">Cles API et automatisation</h2>
             </div>
             <span class="setup-pill">Integrations</span>
         </div>
 
         <div class="setup-progress mt-4">
-            <div class="setup-progress-bar" style="width: 83.333%"></div>
+            <div class="setup-progress-bar" style="width: 100%"></div>
         </div>
 
         <div class="row g-4 mt-1">
@@ -88,7 +88,7 @@
             <button wire:click="previousStep" type="button" class="btn btn-outline-secondary setup-btn-secondary">Retour</button>
             <div class="d-flex flex-column flex-sm-row gap-3">
                 <button wire:click="testKeys" type="button" class="btn btn-outline-dark setup-btn-secondary">Tester les cles</button>
-                <button wire:click="saveAndContinue" type="button" class="btn setup-btn-primary">Continuer</button>
+                <button wire:click="saveAndContinue" type="button" class="btn setup-btn-primary">Terminer la configuration →</button>
             </div>
         </div>
     </section>

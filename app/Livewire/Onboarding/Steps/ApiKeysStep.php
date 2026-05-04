@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Onboarding\Steps;
 
 use App\Models\Setting;
+use Illuminate\Support\Facades\Redirect;
 use Spatie\LivewireWizard\Components\StepComponent;
 
 class ApiKeysStep extends StepComponent
@@ -39,7 +40,12 @@ class ApiKeysStep extends StepComponent
             );
         }
 
-        $this->nextStep();
+        Setting::query()->updateOrCreate(
+            ['key' => 'setup_completed'],
+            ['value' => '1', 'group' => 'system']
+        );
+
+        return Redirect::route('admin.dashboard');
     }
 
     public function render()

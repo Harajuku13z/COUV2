@@ -2,7 +2,7 @@
     <form wire:submit="importAndContinue" class="setup-panel p-4 p-lg-5">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
             <div>
-                <div class="setup-kicker">Etape 2 sur 6</div>
+                <div class="setup-kicker">Etape 2 sur 5</div>
                 <h2 class="setup-section-title mt-3 mb-0">Import des communes par departement</h2>
             </div>
             <span class="setup-pill">Selection simple</span>
