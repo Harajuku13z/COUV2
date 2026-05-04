@@ -5,7 +5,7 @@
 @php($websiteService = $service->websiteService)
 <div class="space-y-8">
     <section class="admin-panel admin-panel-strong p-6">
-        <a href="{{ route('admin.services.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 no-underline transition hover:text-slate-700">
+        <a href="{{ \App\Support\CentralAppUrl::admin('services') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 no-underline transition hover:text-slate-700">
             &larr; Retour aux services
         </a>
         <div class="mt-4">
@@ -25,7 +25,7 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.services.update', $service->id) }}" method="POST" class="space-y-6">
+    <form action="{{ \App\Support\CentralAppUrl::admin('services/'.$service->id) }}" method="POST" class="space-y-6">
         @csrf
         @method('PUT')
 
@@ -100,12 +100,12 @@
         </div>
 
         <div class="flex flex-wrap items-center justify-end gap-3">
-            <a href="{{ route('admin.services.index') }}" class="admin-link-btn admin-btn-secondary">Annuler</a>
+            <a href="{{ \App\Support\CentralAppUrl::admin('services') }}" class="admin-link-btn admin-btn-secondary">Annuler</a>
             <button type="submit" class="admin-btn admin-btn-primary">Enregistrer</button>
         </div>
     </form>
 
-    <form action="{{ route('admin.services.destroy', $service->id) }}" method="POST" onsubmit="return confirm('Supprimer définitivement ce service ?')">
+    <form action="{{ \App\Support\CentralAppUrl::admin('services/'.$service->id) }}" method="POST" onsubmit="return confirm('Supprimer définitivement ce service ?')">
         @csrf
         @method('DELETE')
         <button type="submit" class="admin-btn admin-btn-danger">Supprimer ce service</button>

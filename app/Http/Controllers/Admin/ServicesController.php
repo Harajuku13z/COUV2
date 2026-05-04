@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Service;
 use App\Models\Setting;
 use App\Models\WebsiteService;
+use App\Support\CentralAppUrl;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -63,7 +64,7 @@ class ServicesController extends Controller
         $validated['is_emergency'] = $request->boolean('is_emergency');
         $validated['slug'] = \Illuminate\Support\Str::slug($validated['name']);
         Service::query()->create($validated);
-        return redirect()->route('admin.services.index')->with('status', 'Service créé.');
+        return redirect()->to(CentralAppUrl::admin('services'))->with('status', 'Service créé.');
     }
 
     public function edit(int $id): View
@@ -103,7 +104,7 @@ class ServicesController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         Service::query()->findOrFail($id)->delete();
-        return redirect()->route('admin.services.index')->with('status', 'Service supprimé.');
+        return redirect()->to(CentralAppUrl::admin('services'))->with('status', 'Service supprimé.');
     }
 
     public function toggleActive(int $id): RedirectResponse

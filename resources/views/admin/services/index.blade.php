@@ -2,6 +2,7 @@
 @section('title', 'Services')
 
 @section('content')
+@php($servicesBaseUrl = \App\Support\CentralAppUrl::admin('services'))
 <div class="space-y-8">
     <section class="admin-panel admin-panel-dark overflow-hidden">
         <div class="grid gap-8 px-6 py-7 lg:grid-cols-[1.2fr_0.8fr] lg:px-8">
@@ -18,11 +19,11 @@
                     Lance la préparation des pages sur {{ count($departmentCodes) }} département(s) actif(s) pour tous les services que tu proposes.
                 </p>
                 <div class="mt-5 flex flex-col gap-3">
-                    <form action="{{ route('admin.services.generate-all-pages') }}" method="POST">
+                    <form action="{{ \App\Support\CentralAppUrl::admin('services/generate-all-pages') }}" method="POST">
                         @csrf
                         <button type="submit" class="admin-btn admin-btn-primary w-full">Générer toutes les pages IA</button>
                     </form>
-                    <a href="{{ route('admin.pages.index') }}" class="admin-link-btn admin-btn-secondary w-full">Voir les pages générées</a>
+                    <a href="{{ \App\Support\CentralAppUrl::admin('pages') }}" class="admin-link-btn admin-btn-secondary w-full">Voir les pages générées</a>
                 </div>
             </div>
         </div>
@@ -60,7 +61,7 @@
     @if ($services->isEmpty())
         <div class="admin-panel admin-panel-strong p-12 text-center">
             <p class="text-sm text-slate-500">Aucun service actif pour le moment.</p>
-            <a href="{{ route('admin.services.create') }}" class="admin-link-btn admin-btn-primary mt-4">Créer un service</a>
+            <a href="{{ \App\Support\CentralAppUrl::admin('services/create') }}" class="admin-link-btn admin-btn-primary mt-4">Créer un service</a>
         </div>
     @else
         @foreach ($services as $category => $categoryServices)
@@ -105,11 +106,11 @@
                             </div>
 
                             <div class="mt-5 flex flex-wrap gap-3">
-                                <form action="{{ route('admin.services.generate-pages', $service->id) }}" method="POST">
+                                <form action="{{ \App\Support\CentralAppUrl::admin('services/'.$service->id.'/generate-pages') }}" method="POST">
                                     @csrf
                                     <button type="submit" class="admin-btn admin-btn-primary">Générer les pages IA</button>
                                 </form>
-                                <a href="{{ route('admin.services.edit', $service->id) }}" class="admin-link-btn admin-btn-secondary">Configurer le service</a>
+                                <a href="{{ \App\Support\CentralAppUrl::admin('services/'.$service->id.'/edit') }}" class="admin-link-btn admin-btn-secondary">Configurer le service</a>
                             </div>
 
                             @if ($websiteService->custom_price)
