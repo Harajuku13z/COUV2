@@ -34,6 +34,9 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $seo['title'] }}">
     <meta name="twitter:description" content="{{ $seo['description'] }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Instrument+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
     @if(! empty($seo['image']))
         <meta property="og:image" content="{{ $seo['image'] }}">
         <meta name="twitter:image" content="{{ $seo['image'] }}">
@@ -46,6 +49,18 @@
             --brand-accent: {{ $theme['accent'] }};
             --font-heading: '{{ $theme['heading_font'] }}', sans-serif;
             --font-body: '{{ $theme['body_font'] }}', sans-serif;
+            --site-ink: #111827;
+            --site-muted: #5b6472;
+            --site-panel: rgba(255, 255, 255, 0.84);
+            --site-border: rgba(15, 23, 42, 0.08);
+            --site-shadow: 0 22px 55px rgba(15, 23, 42, 0.08);
+        }
+
+        body {
+            background:
+                radial-gradient(circle at top left, rgba(79, 116, 101, 0.08), transparent 24%),
+                radial-gradient(circle at top right, rgba(217, 119, 6, 0.06), transparent 18%),
+                linear-gradient(180deg, #fcfcfb 0%, #f8fafc 42%, #f4f7fb 100%);
         }
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
