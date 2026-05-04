@@ -81,9 +81,14 @@ foreach (config('tenancy.central_domains', []) as $domain) {
             // Zones & Cities
             Route::get('/zones', [ZonesController::class, 'index'])->name('zones.index');
             Route::post('/zones/import', [ZonesController::class, 'import'])->name('zones.import');
+            Route::post('/zones/{deptCode}/toggle', [ZonesController::class, 'toggleDepartment'])->name('zones.toggle');
+            Route::delete('/zones/{deptCode}', [ZonesController::class, 'destroyDepartment'])->name('zones.destroy');
             Route::get('/zones/{deptCode}/cities', [ZonesController::class, 'cities'])->name('zones.cities');
+            Route::post('/zones/{deptCode}/cities/bulk', [ZonesController::class, 'bulkUpdateCities'])->name('zones.cities.bulk');
             Route::post('/zones/cities/{id}/toggle', [ZonesController::class, 'toggleCity'])->name('zones.cities.toggle');
             Route::post('/zones/cities/{id}/priority', [ZonesController::class, 'updateCityPriority'])->name('zones.cities.priority');
+            Route::post('/zones/cities/{id}/favorite', [ZonesController::class, 'toggleCityFavorite'])->name('zones.cities.favorite');
+            Route::delete('/zones/cities/{id}', [ZonesController::class, 'destroyCity'])->name('zones.cities.destroy');
 
             // Services
             Route::get('/services', [ServicesController::class, 'index'])->name('services.index');
