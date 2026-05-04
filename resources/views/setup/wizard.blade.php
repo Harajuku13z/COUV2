@@ -225,7 +225,7 @@
                             <div class="col-sm-4 col-lg-6 col-xl-4">
                                 <div class="setup-stat h-100">
                                     <div class="text-uppercase small text-secondary fw-semibold">Etapes</div>
-                                    <div class="fs-3 fw-bold mt-2">5</div>
+                                    <div class="fs-3 fw-bold mt-2">6</div>
                                 </div>
                             </div>
                             <div class="col-sm-4 col-lg-6 col-xl-4">

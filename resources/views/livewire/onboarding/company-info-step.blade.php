@@ -4,7 +4,7 @@
             <form wire:submit="saveAndContinue" class="setup-panel p-4 p-lg-5 h-100">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                     <div>
-                        <div class="setup-kicker">Etape 1 sur 5</div>
+                        <div class="setup-kicker">Etape 1 sur 6</div>
                         <h2 class="setup-section-title mt-3 mb-0">Informations entreprise</h2>
                     </div>
                     <span class="setup-pill">Base identitaire</span>

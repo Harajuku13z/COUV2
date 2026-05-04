@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\ApiSettingsController;
+use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BrandingController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LeadController;
@@ -29,6 +30,15 @@ foreach (config('tenancy.central_domains', []) as $domain) {
         Route::get('/onboarding', SetupController::class)->name('onboarding');
 
         Route::prefix('admin')->as('admin.')->middleware(\App\Http\Middleware\RequiresSetup::class)->group(function (): void {
+            Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+            Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+            Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+        });
+
+        Route::prefix('admin')->as('admin.')->middleware([
+            \App\Http\Middleware\RequiresSetup::class,
+            \App\Http\Middleware\RequiresAdminAuth::class,
+        ])->group(function (): void {
             Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
             Route::post('/dashboard/sitemap', [DashboardController::class, 'regenerateSitemap'])->name('dashboard.sitemap');
             Route::post('/dashboard/weather', [DashboardController::class, 'refreshWeather'])->name('dashboard.weather');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Onboarding;
 
+use App\Livewire\Onboarding\Steps\AdminSetupStep;
 use App\Livewire\Onboarding\Steps\ApiKeysStep;
 use App\Livewire\Onboarding\Steps\BrandingStep;
 use App\Livewire\Onboarding\Steps\CompanyInfoStep;
@@ -20,6 +21,7 @@ class OnboardingWizard extends WizardComponent
             ZonesStep::class,
             ServicesStep::class,
             BrandingStep::class,
+            AdminSetupStep::class,
             ApiKeysStep::class,
         ];
     }

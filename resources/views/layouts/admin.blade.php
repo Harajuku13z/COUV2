@@ -28,6 +28,10 @@
                     </div>
                     <div class="flex items-center gap-3 text-sm">
                         <a href="{{ url('/') }}" class="rounded-full border border-slate-300 px-4 py-2">Voir le site</a>
+                        <form method="POST" action="{{ route('admin.logout') }}">
+                            @csrf
+                            <button type="submit" class="rounded-full border border-slate-300 px-4 py-2 text-slate-600 hover:bg-slate-50">Deconnexion</button>
+                        </form>
                     </div>
                 </div>
             </header>
