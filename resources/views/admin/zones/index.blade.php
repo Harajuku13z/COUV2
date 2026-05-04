@@ -2,6 +2,7 @@
 @section('title', 'Zones géographiques')
 
 @section('content')
+@php($zonesBaseUrl = \App\Support\CentralAppUrl::admin('zones'))
 <div class="space-y-8">
     <section class="admin-panel admin-panel-dark overflow-hidden">
         <div class="grid gap-8 px-6 py-7 lg:grid-cols-[1.2fr_0.8fr] lg:px-8">
@@ -27,7 +28,7 @@
                     Ouvre directement une liste de villes pour affiner les statuts, les priorités et les favoris.
                 </p>
                 <div class="mt-5">
-                    <a href="{{ route('admin.zones.cities', request('dept', $departments->first()?->code ?? '75')) }}"
+                    <a href="{{ \App\Support\CentralAppUrl::admin('zones/'.(request('dept', $departments->first()?->code ?? '75').'/cities')) }}"
                        class="admin-link-btn admin-btn-primary w-full">
                         Ouvrir la gestion détaillée des villes
                     </a>
@@ -78,7 +79,7 @@
                 </div>
             </div>
 
-            <form action="{{ route('admin.zones.import') }}" method="POST" class="space-y-4">
+            <form action="{{ \App\Support\CentralAppUrl::admin('zones/import') }}" method="POST" class="space-y-4">
                 @csrf
                 <div>
                     <label for="dept_code_top" class="mb-2 block text-sm font-semibold text-slate-700">Département</label>
@@ -144,19 +145,19 @@
                                     <td class="text-right font-semibold text-slate-700">{{ number_format($dept->priority_cities_count) }}</td>
                                     <td>
                                         <div class="flex flex-wrap justify-end gap-2">
-                                            <a href="{{ route('admin.zones.cities', $dept->code) }}" class="admin-link-btn admin-btn-secondary">Voir villes</a>
-                                            <form action="{{ route('admin.zones.import') }}" method="POST" class="inline">
+                                            <a href="{{ \App\Support\CentralAppUrl::admin('zones/'.$dept->code.'/cities') }}" class="admin-link-btn admin-btn-secondary">Voir villes</a>
+                                            <form action="{{ \App\Support\CentralAppUrl::admin('zones/import') }}" method="POST" class="inline">
                                                 @csrf
                                                 <input type="hidden" name="dept_code" value="{{ $dept->code }}">
                                                 <button type="submit" class="admin-btn admin-btn-secondary">Réimporter</button>
                                             </form>
-                                            <form action="{{ route('admin.zones.toggle', $dept->code) }}" method="POST" class="inline">
+                                            <form action="{{ \App\Support\CentralAppUrl::admin('zones/'.$dept->code.'/toggle') }}" method="POST" class="inline">
                                                 @csrf
                                                 <button type="submit" class="admin-btn admin-btn-warning">
                                                     {{ $dept->active_cities_count > 0 ? 'Tout désactiver' : 'Tout activer' }}
                                                 </button>
                                             </form>
-                                            <form action="{{ route('admin.zones.destroy', $dept->code) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer ce département et toutes ses villes ?');">
+                                            <form action="{{ \App\Support\CentralAppUrl::admin('zones/'.$dept->code) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer ce département et toutes ses villes ?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="admin-btn admin-btn-danger">Supprimer</button>

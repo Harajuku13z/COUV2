@@ -10,6 +10,7 @@ use App\Jobs\ImportDepartmentCitiesJob;
 use App\Models\City;
 use App\Models\Department;
 use App\Models\Setting;
+use App\Support\CentralAppUrl;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -144,7 +145,7 @@ class ZonesController extends Controller
             $department->delete();
         });
 
-        return redirect()->route('admin.zones.index')->with('status', "Département {$department->code} supprimé avec ses villes.");
+        return redirect()->to(CentralAppUrl::admin('zones'))->with('status', "Département {$department->code} supprimé avec ses villes.");
     }
 
     public function updateCityPriority(Request $request, int $id): RedirectResponse

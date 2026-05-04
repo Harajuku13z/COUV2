@@ -2,11 +2,12 @@
 @section('title', 'Villes — ' . $department->name)
 
 @section('content')
+@php($zonesBaseUrl = \App\Support\CentralAppUrl::admin('zones'))
 <div class="space-y-8">
     <section class="admin-panel admin-panel-dark overflow-hidden">
         <div class="grid gap-8 px-6 py-7 lg:grid-cols-[1.15fr_0.85fr] lg:px-8">
             <div>
-                <a href="{{ route('admin.zones.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-white/70 no-underline transition hover:text-white">
+                <a href="{{ \App\Support\CentralAppUrl::admin('zones') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-white/70 no-underline transition hover:text-white">
                     &larr; Retour aux zones
                 </a>
                 <p class="admin-kicker mt-4" style="color:rgba(255,244,232,0.72);">Département {{ $department->code }}</p>
@@ -65,12 +66,12 @@
                 <p class="admin-section-copy">Affiche uniquement les villes qui méritent ton attention immédiate.</p>
             </div>
             <div class="admin-actions">
-                <form action="{{ route('admin.zones.import') }}" method="POST">
+                <form action="{{ \App\Support\CentralAppUrl::admin('zones/import') }}" method="POST">
                     @csrf
                     <input type="hidden" name="dept_code" value="{{ $department->code }}">
                     <button type="submit" class="admin-btn admin-btn-secondary">Réimporter le département</button>
                 </form>
-                <form action="{{ route('admin.zones.toggle', $department->code) }}" method="POST">
+                <form action="{{ \App\Support\CentralAppUrl::admin('zones/'.$department->code.'/toggle') }}" method="POST">
                     @csrf
                     <button type="submit" class="admin-btn admin-btn-warning">
                         {{ $cityStats['active'] > 0 ? 'Tout désactiver' : 'Tout activer' }}
@@ -79,7 +80,7 @@
             </div>
         </div>
 
-        <form method="GET" action="{{ route('admin.zones.cities', $department->code) }}" class="grid gap-4 xl:grid-cols-[1.4fr_0.85fr_0.85fr_0.85fr_auto]">
+        <form method="GET" action="{{ \App\Support\CentralAppUrl::admin('zones/'.$department->code.'/cities') }}" class="grid gap-4 xl:grid-cols-[1.4fr_0.85fr_0.85fr_0.85fr_auto]">
             <div>
                 <label for="q" class="mb-2 block text-sm font-semibold text-slate-700">Recherche</label>
                 <input type="text" id="q" name="q" value="{{ request('q') }}" placeholder="Ville, code postal ou code INSEE">
@@ -120,7 +121,7 @@
         </form>
     </section>
 
-    <form action="{{ route('admin.zones.cities.bulk', $department->code) }}" method="POST">
+    <form action="{{ \App\Support\CentralAppUrl::admin('zones/'.$department->code.'/cities/bulk') }}" method="POST">
         @csrf
         <section class="admin-panel admin-panel-strong p-6">
             <div class="admin-section-head">
@@ -180,7 +181,7 @@
                                         {{ $city->population ? number_format($city->population) : '—' }}
                                     </td>
                                     <td class="text-center">
-                                        <form action="{{ route('admin.zones.cities.priority', $city->id) }}" method="POST" class="inline-flex items-center gap-2">
+                                        <form action="{{ \App\Support\CentralAppUrl::admin('zones/cities/'.$city->id.'/priority') }}" method="POST" class="inline-flex items-center gap-2">
                                             @csrf
                                             <select name="seo_priority" style="width:auto;min-width:72px;padding:10px 12px;border-radius:14px;">
                                                 @for ($i = 1; $i <= 10; $i++)
@@ -191,7 +192,7 @@
                                         </form>
                                     </td>
                                     <td class="text-center">
-                                        <form action="{{ route('admin.zones.cities.favorite', $city->id) }}" method="POST">
+                                        <form action="{{ \App\Support\CentralAppUrl::admin('zones/cities/'.$city->id.'/favorite') }}" method="POST">
                                             @csrf
                                             <button type="submit"
                                                     class="inline-flex h-10 w-10 items-center justify-center rounded-full border transition {{ in_array($city->id, $favoriteCityIds, true) ? 'border-amber-300 bg-amber-50 text-amber-700' : 'border-slate-300 bg-white text-slate-400 hover:bg-slate-50' }}"
@@ -211,13 +212,13 @@
                                     <td class="text-right font-semibold text-slate-700">{{ number_format($city->leads_count) }}</td>
                                     <td>
                                         <div class="flex flex-wrap justify-end gap-2">
-                                            <form action="{{ route('admin.zones.cities.toggle', $city->id) }}" method="POST">
+                                            <form action="{{ \App\Support\CentralAppUrl::admin('zones/cities/'.$city->id.'/toggle') }}" method="POST">
                                                 @csrf
                                                 <button type="submit" class="admin-btn admin-btn-secondary">
                                                     {{ $city->is_active ? 'Désactiver' : 'Activer' }}
                                                 </button>
                                             </form>
-                                            <form action="{{ route('admin.zones.cities.destroy', $city->id) }}" method="POST" onsubmit="return confirm('Supprimer cette ville ?');">
+                                            <form action="{{ \App\Support\CentralAppUrl::admin('zones/cities/'.$city->id) }}" method="POST" onsubmit="return confirm('Supprimer cette ville ?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="admin-btn admin-btn-danger">Supprimer</button>
