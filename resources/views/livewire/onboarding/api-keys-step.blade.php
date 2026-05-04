@@ -23,28 +23,39 @@
                         <label class="form-label fw-semibold text-secondary">SerpAPI key</label>
                         <input wire:model="serpapi_key" class="form-control setup-form-control" placeholder="Ta cle SerpAPI">
                     </div>
+
+                    {{-- Météo : Open-Meteo (gratuit, sans clé, données Météo-France) --}}
                     <div class="col-12">
-                        <label class="form-label fw-semibold text-secondary">OpenWeather API key</label>
-                        <input wire:model="openweather_api_key" class="form-control setup-form-control" placeholder="Ta cle meteo">
+                        <div class="rounded-4 px-4 py-3 d-flex align-items-start gap-3"
+                             style="background:#eef3ef;border:1px solid rgba(54,84,70,.12);">
+                            <div style="font-size:1.4rem;line-height:1;">🇫🇷</div>
+                            <div>
+                                <div class="fw-bold" style="color:var(--setup-primary);">Météo — Open-Meteo (Météo-France)</div>
+                                <div class="text-secondary small mt-1">
+                                    Données officielles via <strong>Open-Meteo</strong> (modèle ARPEGE de Météo-France).
+                                    Aucune clé requise — gratuit, sans inscription.
+                                </div>
+                                <a href="https://open-meteo.com" target="_blank" class="small fw-semibold mt-1 d-inline-block"
+                                   style="color:var(--setup-primary);">open-meteo.com →</a>
+                            </div>
+                            <span class="badge rounded-pill ms-auto flex-shrink-0" style="background:#365446;color:#fff;font-size:.75rem;padding:.4em .8em;">
+                                ✓ Actif
+                            </span>
+                        </div>
                     </div>
+
                     <div class="col-12">
                         <div class="row g-3">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="setup-info-card h-100 {{ $openai_valid ? 'border border-success-subtle bg-success-subtle' : '' }}">
                                     <div class="fw-bold">OpenAI</div>
-                                    <div class="text-secondary">{{ $openai_valid ? 'Cle validee' : 'A tester' }}</div>
+                                    <div class="text-secondary small mt-1">{{ $openai_valid ? '✓ Cle validee' : 'A renseigner' }}</div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="setup-info-card h-100 {{ $serpapi_valid ? 'border border-success-subtle bg-success-subtle' : '' }}">
                                     <div class="fw-bold">SerpAPI</div>
-                                    <div class="text-secondary">{{ $serpapi_valid ? 'Cle validee' : 'A tester' }}</div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="setup-info-card h-100 {{ $openweather_valid ? 'border border-success-subtle bg-success-subtle' : '' }}">
-                                    <div class="fw-bold">Weather</div>
-                                    <div class="text-secondary">{{ $openweather_valid ? 'Cle validee' : 'A tester' }}</div>
+                                    <div class="text-secondary small mt-1">{{ $serpapi_valid ? '✓ Cle validee' : 'A renseigner' }}</div>
                                 </div>
                             </div>
                         </div>
@@ -56,9 +67,18 @@
                 <div class="setup-dark-card h-100">
                     <div class="text-uppercase small opacity-75 fw-semibold">A quoi servent ces cles</div>
                     <div class="mt-3 d-grid gap-3">
-                        <div><strong>OpenAI</strong><br><span class="opacity-75">Pour la generation et la personnalisation des contenus.</span></div>
-                        <div><strong>SerpAPI</strong><br><span class="opacity-75">Pour suivre les signaux SEO et la concurrence locale.</span></div>
-                        <div><strong>Weather</strong><br><span class="opacity-75">Pour contextualiser les pages et les alertes meteo.</span></div>
+                        <div>
+                            <strong>OpenAI</strong><br>
+                            <span class="opacity-75">Generation et personnalisation des contenus SEO.</span>
+                        </div>
+                        <div>
+                            <strong>SerpAPI</strong><br>
+                            <span class="opacity-75">Suivi des signaux SEO et de la concurrence locale.</span>
+                        </div>
+                        <div>
+                            <strong>Météo 🇫🇷</strong><br>
+                            <span class="opacity-75">Donnees officielles Météo-France via Open-Meteo. Gratuit, aucune cle.</span>
+                        </div>
                     </div>
                 </div>
             </div>

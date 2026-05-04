@@ -55,10 +55,10 @@ return [
         'timeout' => (int) env('OPENAI_REQUEST_TIMEOUT', 120),
     ],
 
-    'openweather' => [
-        'key' => env('OPENWEATHER_API_KEY'),
-        'base_url' => env('OPENWEATHER_BASE_URL', 'https://api.openweathermap.org'),
-        'timeout' => (int) env('OPENWEATHER_TIMEOUT', 30),
+    'open_meteo' => [
+        'base_url' => 'https://api.open-meteo.com/v1/forecast',
+        'timeout'  => 15,
+        'model'    => 'meteofrance_seamless',
     ],
 
 ];
