@@ -13,24 +13,24 @@
     <style>
         :root {
             --bs-body-font-family: "Manrope", sans-serif;
-            --bs-body-bg: #f5f1e9;
-            --bs-body-color: #16241f;
-            --bs-primary: #335546;
-            --bs-primary-rgb: 51, 85, 70;
-            --bs-secondary-color: #647067;
-            --bs-border-color: rgba(37, 54, 47, 0.1);
-            --admin-bg: #f4f0e8;
+            --bs-body-bg: #f3f4f6;
+            --bs-body-color: #16181d;
+            --bs-primary: #1f2937;
+            --bs-primary-rgb: 31, 41, 55;
+            --bs-secondary-color: #6b7280;
+            --bs-border-color: rgba(17, 24, 39, 0.10);
+            --admin-bg: #eef1f4;
             --admin-surface: rgba(255, 255, 255, 0.84);
             --admin-surface-strong: rgba(255, 255, 255, 0.94);
-            --admin-border: rgba(37, 54, 47, 0.1);
-            --admin-ink: #16241f;
-            --admin-muted: #647067;
-            --admin-primary: #335546;
-            --admin-secondary: #21332d;
-            --admin-accent: #c7772d;
-            --admin-danger: #b74d4d;
-            --admin-success: #2f7a5b;
-            --admin-shadow: 0 28px 70px rgba(29, 41, 35, 0.08);
+            --admin-border: rgba(17, 24, 39, 0.10);
+            --admin-ink: #16181d;
+            --admin-muted: #6b7280;
+            --admin-primary: #111827;
+            --admin-secondary: #1f2937;
+            --admin-accent: #4b5563;
+            --admin-danger: #7f1d1d;
+            --admin-success: #374151;
+            --admin-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
             --admin-radius: 28px;
         }
 
@@ -38,9 +38,9 @@
             min-height: 100vh;
             color: var(--admin-ink);
             background:
-                radial-gradient(circle at top left, rgba(199, 119, 45, 0.12), transparent 24%),
-                radial-gradient(circle at 80% 0%, rgba(51, 85, 70, 0.14), transparent 28%),
-                linear-gradient(180deg, #f8f4ec 0%, #f4f0e8 45%, #f2f5ef 100%);
+                radial-gradient(circle at top left, rgba(148, 163, 184, 0.10), transparent 22%),
+                radial-gradient(circle at 80% 0%, rgba(203, 213, 225, 0.14), transparent 26%),
+                linear-gradient(180deg, #f8fafc 0%, #f1f5f9 48%, #eef2f7 100%);
         }
 
         .admin-sidebar-shell {
@@ -48,10 +48,10 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 32px;
             background:
-                linear-gradient(180deg, rgba(18, 27, 24, 0.98), rgba(27, 39, 34, 0.95)),
-                linear-gradient(135deg, rgba(199, 119, 45, 0.15), transparent 40%);
-            color: #f4f0e8;
-            box-shadow: 0 24px 70px rgba(18, 27, 24, 0.16);
+                linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.96)),
+                linear-gradient(135deg, rgba(148, 163, 184, 0.10), transparent 42%);
+            color: #e5e7eb;
+            box-shadow: 0 24px 70px rgba(15, 23, 42, 0.18);
         }
 
         .admin-brand {
@@ -69,7 +69,7 @@
             font-weight: 800;
             letter-spacing: .28em;
             text-transform: uppercase;
-            color: rgba(244, 240, 232, 0.72);
+            color: rgba(226, 232, 240, 0.66);
         }
 
         .admin-brand-title,
@@ -81,7 +81,7 @@
 
         .admin-brand-title {
             font-size: 1.5rem;
-            color: #fff7ed;
+            color: #f8fafc;
             line-height: 1.1;
         }
 
@@ -89,16 +89,16 @@
             margin: .75rem 0 0;
             font-size: .92rem;
             line-height: 1.6;
-            color: rgba(244, 240, 232, 0.72);
+            color: rgba(226, 232, 240, 0.70);
         }
 
         .admin-shell-navbar {
             position: sticky;
             top: 0;
             z-index: 1030;
-            border-bottom: 1px solid rgba(37, 54, 47, 0.08);
+            border-bottom: 1px solid rgba(17, 24, 39, 0.08);
             backdrop-filter: blur(16px);
-            background: rgba(248, 244, 236, 0.84);
+            background: rgba(248, 250, 252, 0.88);
         }
 
         .admin-page-title {
@@ -122,14 +122,14 @@
             gap: .75rem;
             border-radius: 20px;
             padding: .9rem 1rem;
-            color: rgba(244, 240, 232, 0.9);
+            color: rgba(241, 245, 249, 0.92);
             font-weight: 700;
         }
 
         .admin-nav-pills .nav-link small {
             display: block;
             margin-top: .15rem;
-            color: rgba(244, 240, 232, 0.56);
+            color: rgba(203, 213, 225, 0.58);
             font-size: .78rem;
             font-weight: 600;
         }
@@ -137,7 +137,7 @@
         .admin-nav-pills .nav-link:hover,
         .admin-nav-pills .nav-link.active {
             color: #fff;
-            background: linear-gradient(135deg, rgba(255, 247, 237, 0.16), rgba(199, 119, 45, 0.16));
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.10), rgba(148, 163, 184, 0.14));
         }
 
         .admin-nav-badge {
@@ -148,7 +148,7 @@
             height: 30px;
             border-radius: 999px;
             background: rgba(255, 255, 255, 0.07);
-            color: rgba(255, 247, 237, 0.92);
+            color: rgba(248, 250, 252, 0.92);
             font-size: .78rem;
             font-weight: 800;
         }
@@ -168,14 +168,14 @@
         .admin-panel-strong {
             background:
                 linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.88)),
-                linear-gradient(135deg, rgba(199, 119, 45, 0.04), transparent);
+                linear-gradient(135deg, rgba(148, 163, 184, 0.05), transparent);
         }
 
         .admin-panel-dark {
-            color: #f8f4ec;
+            color: #f8fafc;
             background:
-                linear-gradient(180deg, rgba(25, 38, 33, 0.98), rgba(31, 49, 43, 0.95)),
-                radial-gradient(circle at top right, rgba(199, 119, 45, 0.22), transparent 30%);
+                linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.95)),
+                radial-gradient(circle at top right, rgba(148, 163, 184, 0.18), transparent 30%);
         }
 
         .admin-stat-grid {
@@ -195,7 +195,7 @@
             border-radius: 999px;
             padding: .65rem .95rem;
             background: rgba(255,255,255,.7);
-            border: 1px solid rgba(37,54,47,.08);
+            border: 1px solid rgba(17,24,39,.08);
             color: var(--admin-secondary);
             font-size: .86rem;
             font-weight: 700;
@@ -203,10 +203,10 @@
 
         .admin-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
         .admin-btn, .admin-link-btn { display: inline-flex; align-items: center; justify-content: center; gap: .6rem; border-radius: 999px; padding: .78rem 1.15rem; border: 1px solid transparent; font-size: .92rem; font-weight: 800; text-decoration: none; transition: 180ms ease; }
-        .admin-btn-primary { color: #fff; background: linear-gradient(135deg, var(--admin-primary), #4a715f); box-shadow: 0 16px 30px rgba(51,85,70,.2); }
-        .admin-btn-secondary { color: var(--admin-secondary); background: rgba(255,255,255,.82); border-color: rgba(37,54,47,.1); }
-        .admin-btn-warning { color: #8a4a16; background: #fff7ed; border-color: rgba(199,119,45,.24); }
-        .admin-btn-danger { color: #8e3030; background: #fff1f1; border-color: rgba(183,77,77,.22); }
+        .admin-btn-primary { color: #fff; background: linear-gradient(135deg, var(--admin-primary), #374151); box-shadow: 0 14px 28px rgba(17,24,39,.16); }
+        .admin-btn-secondary { color: var(--admin-secondary); background: rgba(255,255,255,.86); border-color: rgba(17,24,39,.10); }
+        .admin-btn-warning { color: #1f2937; background: #eef2f7; border-color: rgba(100,116,139,.18); }
+        .admin-btn-danger { color: #7f1d1d; background: #f8fafc; border-color: rgba(127,29,29,.18); }
         .admin-btn-primary:hover, .admin-btn-secondary:hover, .admin-btn-warning:hover, .admin-btn-danger:hover { transform: translateY(-1px); }
         .admin-btn-primary:hover { color: #fff; }
 
@@ -217,8 +217,8 @@
         .admin-note {
             border-radius: 22px;
             padding: 18px 20px;
-            background: rgba(51, 85, 70, 0.05);
-            border: 1px solid rgba(51, 85, 70, 0.08);
+            background: rgba(148, 163, 184, 0.08);
+            border: 1px solid rgba(148, 163, 184, 0.14);
             color: var(--admin-secondary);
         }
 
@@ -231,7 +231,7 @@
         .admin-app textarea {
             width: 100%;
             border-radius: 18px;
-            border: 1px solid rgba(37, 54, 47, 0.1);
+            border: 1px solid rgba(17, 24, 39, 0.10);
             background: rgba(255, 255, 255, 0.92);
             padding: 14px 16px;
             font-size: .95rem;
@@ -244,41 +244,41 @@
         .admin-app input:focus,
         .admin-app select:focus,
         .admin-app textarea:focus {
-            border-color: rgba(51, 85, 70, 0.35);
-            box-shadow: 0 0 0 4px rgba(51, 85, 70, 0.08);
+            border-color: rgba(75, 85, 99, 0.32);
+            box-shadow: 0 0 0 4px rgba(148, 163, 184, 0.12);
         }
 
         .admin-table-wrap { overflow-x: auto; }
         .admin-table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 760px; }
-        .admin-table thead th { padding: 0 14px 16px; border-bottom: 1px solid rgba(37,54,47,.08); color: var(--admin-muted); font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-        .admin-table tbody td { padding: 18px 14px; border-bottom: 1px solid rgba(37,54,47,.06); vertical-align: top; }
+        .admin-table thead th { padding: 0 14px 16px; border-bottom: 1px solid rgba(17,24,39,.08); color: var(--admin-muted); font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+        .admin-table tbody td { padding: 18px 14px; border-bottom: 1px solid rgba(17,24,39,.06); vertical-align: top; }
         .admin-table tbody tr:hover td { background: rgba(255,255,255,.42); }
 
         .admin-badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 10px; font-size: .76rem; font-weight: 800; }
-        .admin-badge-success { color: #1f6c4f; background: rgba(47,122,91,.12); }
-        .admin-badge-muted { color: #59655f; background: rgba(87,101,93,.1); }
-        .admin-badge-accent { color: #8a4a16; background: rgba(199,119,45,.14); }
+        .admin-badge-success { color: #111827; background: rgba(203, 213, 225, 0.56); }
+        .admin-badge-muted { color: #4b5563; background: rgba(229, 231, 235, 0.82); }
+        .admin-badge-accent { color: #374151; background: rgba(209, 213, 219, 0.88); }
 
         .admin-alert {
             margin-bottom: 24px;
             border-radius: 24px;
-            border: 1px solid rgba(47, 122, 91, 0.14);
-            background: rgba(47, 122, 91, 0.08);
-            color: #24573f;
+            border: 1px solid rgba(107, 114, 128, 0.18);
+            background: rgba(243, 244, 246, 0.92);
+            color: #1f2937;
             padding: 16px 18px;
             font-size: .92rem;
             font-weight: 700;
         }
 
         .admin-alert-error {
-            border-color: rgba(183, 77, 77, 0.18);
-            background: rgba(183, 77, 77, 0.08);
-            color: #8e3030;
+            border-color: rgba(127, 29, 29, 0.18);
+            background: rgba(248, 250, 252, 0.95);
+            color: #7f1d1d;
         }
 
         .offcanvas.admin-offcanvas {
-            --bs-offcanvas-bg: #1b2722;
-            --bs-offcanvas-color: #f4f0e8;
+            --bs-offcanvas-bg: #111827;
+            --bs-offcanvas-color: #e5e7eb;
         }
 
         @media (max-width: 991.98px) {
