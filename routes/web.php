@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\TestimonialsController;
 use App\Http\Controllers\Admin\ZonesController;
 use App\Http\Controllers\SetupController;
 use App\Livewire\Onboarding\OnboardingWizard;
+use App\Support\CentralAppUrl;
 use App\Support\InstallationState;
 use Illuminate\Support\Facades\Route;
 
@@ -22,8 +23,8 @@ foreach (config('tenancy.central_domains', []) as $domain) {
     Route::domain($domain)->middleware('web')->group(function (): void {
         Route::get('/', function (InstallationState $installationState) {
             return $installationState->isConfigured()
-                ? redirect('/admin')
-                : redirect('/onboarding');
+                ? redirect()->to(CentralAppUrl::admin())
+                : redirect()->to(CentralAppUrl::app('onboarding'));
         })->name('central.dashboard');
 
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Support\CentralAppUrl;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +14,7 @@ class RequiresAdminAuth
     public function handle(Request $request, Closure $next): Response
     {
         if (! $request->session()->get('admin_authenticated')) {
-            return redirect('/admin/login');
+            return redirect()->to(CentralAppUrl::admin('login'));
         }
 
         return $next($request);

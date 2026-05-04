@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Support\CentralAppUrl;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -16,7 +17,7 @@ class AuthController extends Controller
     public function showLogin(): View|RedirectResponse
     {
         if (session('admin_authenticated')) {
-            return redirect('/admin');
+            return redirect()->to(CentralAppUrl::admin());
         }
 
         return view('admin.login');
@@ -41,7 +42,7 @@ class AuthController extends Controller
             $request->session()->put('admin_authenticated', true);
             $request->session()->regenerate();
 
-            return redirect()->intended('/admin');
+            return redirect()->to(CentralAppUrl::admin());
         }
 
         return back()->withErrors(['email' => 'Identifiants incorrects.'])->withInput();
@@ -52,6 +53,6 @@ class AuthController extends Controller
         $request->session()->forget('admin_authenticated');
         $request->session()->regenerate();
 
-        return redirect('/admin/login');
+        return redirect()->to(CentralAppUrl::admin('login'));
     }
 }

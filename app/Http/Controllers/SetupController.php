@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Support\InstallationState;
+use App\Support\CentralAppUrl;
 use Illuminate\Support\Facades\Schema;
 
 class SetupController extends Controller
@@ -12,7 +13,7 @@ class SetupController extends Controller
     public function __invoke(InstallationState $installationState)
     {
         if ($installationState->isConfigured()) {
-            return redirect('/admin');
+            return redirect()->to(CentralAppUrl::admin());
         }
 
         if ($this->hasOnboardingTables()) {
