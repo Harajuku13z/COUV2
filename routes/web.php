@@ -96,12 +96,14 @@ foreach (config('tenancy.central_domains', []) as $domain) {
 
             // Services
             Route::get('/services', [ServicesController::class, 'index'])->name('services.index');
+            Route::post('/services/generate-all-pages', [ServicesController::class, 'generateAllPages'])->name('services.generate-all-pages');
             Route::get('/services/create', [ServicesController::class, 'create'])->name('services.create');
             Route::post('/services', [ServicesController::class, 'store'])->name('services.store');
             Route::get('/services/{id}/edit', [ServicesController::class, 'edit'])->name('services.edit');
             Route::put('/services/{id}', [ServicesController::class, 'update'])->name('services.update');
             Route::delete('/services/{id}', [ServicesController::class, 'destroy'])->name('services.destroy');
             Route::post('/services/{id}/toggle', [ServicesController::class, 'toggleActive'])->name('services.toggle');
+            Route::post('/services/{id}/generate-pages', [ServicesController::class, 'generatePages'])->name('services.generate-pages');
 
             // Testimonials
             Route::get('/testimonials', [TestimonialsController::class, 'index'])->name('testimonials.index');

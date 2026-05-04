@@ -13,6 +13,7 @@ use App\Models\Page;
 use App\Models\PageContent;
 use App\Models\PeopleAlsoAsk;
 use App\Models\LocalPackResult;
+use App\Models\WebsiteService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -37,6 +38,8 @@ class AiContentGeneratorService implements AiContentGeneratorServiceInterface
         if ($page->city === null || $page->service === null) {
             throw new \RuntimeException('Page must have an associated city and service.');
         }
+
+        $websiteService = WebsiteService::query()->where('service_id', $page->service_id)->first();
 
         $templates = [
             self::TEMPLATE_EXPERTISE,
@@ -86,6 +89,7 @@ class AiContentGeneratorService implements AiContentGeneratorServiceInterface
                 'intro' => $generated['intro'],
                 'sections' => $generated['sections'],
                 'faq' => $generated['faq'],
+                'photo_suggestions' => $generated['photo_suggestions'] ?? $this->defaultPhotoSuggestions($page, $websiteService),
                 'cta_primary' => $generated['cta_primary'],
                 'cta_secondary' => $generated['cta_secondary'] ?? 'Demander un devis',
                 'short_excerpt' => $generated['short_excerpt'] ?? Str::limit(strip_tags($generated['intro']), 180),
@@ -165,6 +169,7 @@ class AiContentGeneratorService implements AiContentGeneratorServiceInterface
     private function buildUserPrompt(Page $page, Company $company, string $template, int $seed): string
     {
         $page->loadMissing(['city', 'service']);
+        $websiteService = WebsiteService::query()->where('service_id', $page->service_id)->first();
 
         $paa = PeopleAlsoAsk::query()
             ->whereHas('serpResult', fn ($query) => $query
@@ -207,6 +212,11 @@ class AiContentGeneratorService implements AiContentGeneratorServiceInterface
                 'name' => $page->service?->name,
                 'slug' => $page->service?->slug,
                 'category' => $page->service?->category,
+                'description' => $page->service?->description,
+                'custom_description' => $websiteService?->custom_description,
+                'custom_price' => $websiteService?->custom_price,
+                'keyword_focus' => $websiteService?->keyword_focus,
+                'photo_brief' => $websiteService?->photo_brief,
             ],
             'city' => [
                 'name' => $page->city?->name,
@@ -226,7 +236,11 @@ class AiContentGeneratorService implements AiContentGeneratorServiceInterface
                 'intro',
                 'sections',
                 'faq',
+                'photo_suggestions',
                 'cta_primary',
+            ],
+            'photo_suggestions_format' => [
+                ['title' => 'Nom court du visuel', 'brief' => 'Description photo concrete', 'alt' => 'Texte alternatif SEO en francais'],
             ],
         ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?: '';
     }
@@ -243,6 +257,26 @@ class AiContentGeneratorService implements AiContentGeneratorServiceInterface
 
         return is_array($data['sections']) && count($data['sections']) >= 4
             && is_array($data['faq']) && count($data['faq']) >= 3;
+    }
+
+    private function defaultPhotoSuggestions(Page $page, ?WebsiteService $websiteService): array
+    {
+        $serviceName = $page->service?->name ?? 'service';
+        $cityName = $page->city?->name ?? 'ville';
+        $photoBrief = trim((string) ($websiteService?->photo_brief ?? ''));
+
+        return [
+            [
+                'title' => "Intervention {$serviceName}",
+                'brief' => $photoBrief !== '' ? $photoBrief : "Equipe en intervention de {$serviceName} a {$cityName}",
+                'alt' => "{$serviceName} a {$cityName}",
+            ],
+            [
+                'title' => 'Avant / apres',
+                'brief' => "Visuel comparatif d'une prestation de {$serviceName} dans le secteur de {$cityName}",
+                'alt' => "Resultat {$serviceName} a {$cityName}",
+            ],
+        ];
     }
 
     private function computeSimilarity(string $newContent, int $serviceId): float

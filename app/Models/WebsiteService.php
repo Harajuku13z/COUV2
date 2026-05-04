@@ -9,6 +9,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class WebsiteService extends BaseModel
 {
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+        ];
+    }
+
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);

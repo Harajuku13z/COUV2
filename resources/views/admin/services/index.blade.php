@@ -2,109 +2,124 @@
 @section('title', 'Services')
 
 @section('content')
-<div class="space-y-6">
-
-    {{-- Header --}}
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-bold text-slate-900">Services</h1>
-            <p class="mt-1 text-sm text-slate-500">Gérez les services proposés sur votre site.</p>
+<div class="space-y-8">
+    <section class="admin-panel admin-panel-dark overflow-hidden">
+        <div class="grid gap-8 px-6 py-7 lg:grid-cols-[1.2fr_0.8fr] lg:px-8">
+            <div>
+                <p class="admin-kicker" style="color:rgba(255,244,232,0.72);">Offre commerciale</p>
+                <h1 class="admin-page-title" style="color:#fff7ed;">Tes vrais services actifs, prêts pour la génération locale.</h1>
+                <p class="admin-page-copy" style="color:rgba(248,244,236,0.78);">
+                    Cette page ne remonte que les services réellement activés pendant la configuration du site. Tu peux ici affiner le discours, les mots-clés et le brief photo pour l’IA.
+                </p>
+            </div>
+            <div class="rounded-[26px] border border-white/10 bg-white/6 p-5">
+                <p class="text-sm font-semibold text-white/70">Génération globale</p>
+                <p class="mt-2 text-sm leading-6 text-white/65">
+                    Lance la préparation des pages sur {{ count($departmentCodes) }} département(s) actif(s) pour tous les services que tu proposes.
+                </p>
+                <div class="mt-5 flex flex-col gap-3">
+                    <form action="{{ route('admin.services.generate-all-pages') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="admin-btn admin-btn-primary w-full">Générer toutes les pages IA</button>
+                    </form>
+                    <a href="{{ route('admin.pages.index') }}" class="admin-link-btn admin-btn-secondary w-full">Voir les pages générées</a>
+                </div>
+            </div>
         </div>
-        <a href="{{ route('admin.services.create') }}"
-           class="rounded-2xl bg-slate-900 text-white px-4 py-2 text-sm font-medium hover:bg-slate-800 transition-colors">
-            + Ajouter un service
-        </a>
-    </div>
+    </section>
 
-    {{-- Success alert --}}
-    @if (session('status'))
-        <div class="rounded-2xl bg-green-50 border border-green-200 text-green-800 px-4 py-3 text-sm">
-            {{ session('status') }}
+    @if ($errors->any())
+        <div class="admin-alert admin-alert-error">
+            <ul class="list-disc list-inside space-y-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
     @endif
 
-    {{-- Services grouped by category --}}
+    <div class="admin-stat-grid md:grid-cols-2 xl:grid-cols-4">
+        <article class="admin-panel admin-panel-strong admin-stat-card">
+            <p class="admin-stat-label">Services actifs</p>
+            <p class="admin-stat-value">{{ $stats['services'] }}</p>
+        </article>
+        <article class="admin-panel admin-panel-strong admin-stat-card">
+            <p class="admin-stat-label">Services urgence</p>
+            <p class="admin-stat-value">{{ $stats['emergency'] }}</p>
+        </article>
+        <article class="admin-panel admin-panel-strong admin-stat-card">
+            <p class="admin-stat-label">Pages déjà liées</p>
+            <p class="admin-stat-value">{{ $stats['pages'] }}</p>
+        </article>
+        <article class="admin-panel admin-panel-strong admin-stat-card">
+            <p class="admin-stat-label">Départements actifs</p>
+            <p class="admin-stat-value">{{ $stats['departments'] }}</p>
+        </article>
+    </div>
+
     @if ($services->isEmpty())
-        <div class="rounded-[2rem] bg-white p-12 shadow-sm text-center">
-            <p class="text-slate-500 text-sm">Aucun service pour le moment.</p>
-            <a href="{{ route('admin.services.create') }}"
-               class="mt-4 inline-block rounded-2xl bg-slate-900 text-white px-4 py-2 text-sm font-medium hover:bg-slate-800 transition-colors">
-                Créer le premier service
-            </a>
+        <div class="admin-panel admin-panel-strong p-12 text-center">
+            <p class="text-sm text-slate-500">Aucun service actif pour le moment.</p>
+            <a href="{{ route('admin.services.create') }}" class="admin-link-btn admin-btn-primary mt-4">Créer un service</a>
         </div>
     @else
         @foreach ($services as $category => $categoryServices)
-            <div class="rounded-[2rem] bg-white p-6 shadow-sm">
-                <h2 class="text-base font-semibold text-slate-800 capitalize border-b border-slate-100 pb-3 mb-4">
-                    {{ $category ?: 'Sans catégorie' }}
-                    <span class="ml-2 text-xs font-normal text-slate-400">({{ $categoryServices->count() }})</span>
-                </h2>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left">
-                        <thead>
-                            <tr class="border-b border-slate-100">
-                                <th class="pb-3 font-medium text-slate-500">Nom</th>
-                                <th class="pb-3 font-medium text-slate-500">Catégorie</th>
-                                <th class="pb-3 font-medium text-slate-500 text-center">Urgence</th>
-                                <th class="pb-3 font-medium text-slate-500 text-center">Site web</th>
-                                <th class="pb-3 font-medium text-slate-500 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-50">
-                            @foreach ($categoryServices as $service)
-                                @php
-                                    $ws = $service->websiteServices->first();
-                                    $isActive = $ws?->is_active ?? false;
-                                @endphp
-                                <tr class="hover:bg-slate-50/50 transition-colors">
-                                    <td class="py-3 font-medium text-slate-900">{{ $service->name }}</td>
-                                    <td class="py-3 text-slate-600">{{ $service->category }}</td>
-                                    <td class="py-3 text-center">
-                                        @if ($service->is_emergency)
-                                            <span class="inline-flex items-center rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700">
-                                                Urgence
-                                            </span>
-                                        @else
-                                            <span class="text-slate-300 text-xs">—</span>
-                                        @endif
-                                    </td>
-                                    <td class="py-3 text-center">
-                                        <form action="{{ route('admin.services.toggle', $service->id) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit"
-                                                    class="inline-flex items-center rounded-full px-3 py-0.5 text-xs font-medium transition-colors
-                                                           {{ $isActive ? 'bg-green-50 text-green-700 hover:bg-green-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-200' }}">
-                                                {{ $isActive ? 'Actif' : 'Inactif' }}
-                                            </button>
-                                        </form>
-                                    </td>
-                                    <td class="py-3 text-right">
-                                        <div class="flex items-center justify-end gap-2">
-                                            <a href="{{ route('admin.services.edit', $service->id) }}"
-                                               class="rounded-2xl border border-slate-300 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                                                Modifier
-                                            </a>
-                                            <form action="{{ route('admin.services.destroy', $service->id) }}" method="POST" class="inline"
-                                                  onsubmit="return confirm('Supprimer ce service ?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                        class="rounded-2xl border border-red-200 px-4 py-2 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors">
-                                                    Supprimer
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+            <section class="admin-panel admin-panel-strong p-6">
+                <div class="admin-section-head">
+                    <div>
+                        <h2 class="admin-section-title capitalize">{{ $category ?: 'Sans catégorie' }}</h2>
+                        <p class="admin-section-copy">{{ $categoryServices->count() }} service(s) actif(s) dans cette catégorie.</p>
+                    </div>
                 </div>
-            </div>
+
+                <div class="grid gap-5 xl:grid-cols-2">
+                    @foreach ($categoryServices as $websiteService)
+                        @php($service = $websiteService->service)
+                        <article class="rounded-[26px] border border-slate-200/70 bg-white/84 p-5 shadow-sm">
+                            <div class="flex flex-wrap items-start justify-between gap-4">
+                                <div>
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <h3 class="text-xl font-extrabold text-slate-900">{{ $service->name }}</h3>
+                                        @if ($service->is_emergency)
+                                            <span class="admin-badge admin-badge-accent">Urgence</span>
+                                        @endif
+                                        <span class="admin-badge admin-badge-success">Actif</span>
+                                    </div>
+                                    <p class="mt-2 text-sm leading-6 text-slate-600">{{ $websiteService->custom_description ?: ($service->description ?: 'Aucune description spécifique n’a encore été définie.') }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs uppercase tracking-[0.18em] text-slate-400">Pages</p>
+                                    <p class="mt-1 text-2xl font-extrabold text-slate-900">{{ $service->pages_count }}</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-5 grid gap-4 md:grid-cols-2">
+                                <div class="admin-note">
+                                    <p class="m-0 text-sm font-semibold text-slate-500">Vocabulaire SEO</p>
+                                    <p class="mt-2 text-sm leading-6 text-slate-700">{{ $websiteService->keyword_focus ?: 'Aucune consigne mot-clé pour le moment.' }}</p>
+                                </div>
+                                <div class="admin-note" style="background:rgba(199,119,45,0.06);border-color:rgba(199,119,45,0.10);">
+                                    <p class="m-0 text-sm font-semibold text-slate-500">Brief photo</p>
+                                    <p class="mt-2 text-sm leading-6 text-slate-700">{{ $websiteService->photo_brief ?: 'Aucun brief photo renseigné pour le moment.' }}</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-5 flex flex-wrap gap-3">
+                                <form action="{{ route('admin.services.generate-pages', $service->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="admin-btn admin-btn-primary">Générer les pages IA</button>
+                                </form>
+                                <a href="{{ route('admin.services.edit', $service->id) }}" class="admin-link-btn admin-btn-secondary">Configurer le service</a>
+                            </div>
+
+                            @if ($websiteService->custom_price)
+                                <p class="mt-4 text-sm font-semibold text-slate-500">Repère tarifaire : <span class="text-slate-800">{{ $websiteService->custom_price }}</span></p>
+                            @endif
+                        </article>
+                    @endforeach
+                </div>
+            </section>
         @endforeach
     @endif
-
 </div>
 @endsection

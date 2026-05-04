@@ -15,6 +15,23 @@
         <p class="text-sm text-slate-500">{{ $page->status }}</p>
         <h2 class="mt-4 text-2xl font-semibold">{{ $page->content->h1 ?? 'Sans contenu' }}</h2>
         <p class="mt-4 text-slate-700">{{ $page->content->intro ?? '' }}</p>
+
+        @if (!empty($page->content?->photo_suggestions))
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold text-slate-900">Suggestions photo</h3>
+                <div class="mt-4 space-y-3">
+                    @foreach ($page->content->photo_suggestions as $suggestion)
+                        <div class="rounded-2xl bg-slate-50 p-4">
+                            <p class="font-medium text-slate-900">{{ $suggestion['title'] ?? 'Visuel' }}</p>
+                            <p class="mt-1 text-sm text-slate-600">{{ $suggestion['brief'] ?? '' }}</p>
+                            @if (!empty($suggestion['alt']))
+                                <p class="mt-2 text-xs uppercase tracking-[0.18em] text-slate-400">Alt : {{ $suggestion['alt'] }}</p>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
     </div>
 </section>
 @endsection

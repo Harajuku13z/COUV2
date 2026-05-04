@@ -12,7 +12,7 @@ interface PageGenerationServiceInterface
 {
     public function generatePageTypesForCity(City $city, Service $service): array;
 
-    public function generateAllPagesForDepartment(string $deptCode): int;
+    public function generateAllPagesForDepartment(string $deptCode, ?array $serviceIds = null): int;
 
     public function regeneratePage(Page $page): void;
 }

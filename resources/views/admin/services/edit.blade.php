@@ -2,27 +2,21 @@
 @section('title', 'Modifier le service')
 
 @section('content')
-<div class="space-y-6">
-
-    {{-- Header --}}
-    <div>
-        <a href="{{ route('admin.services.index') }}"
-           class="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 mb-2">
+@php($websiteService = $service->websiteService)
+<div class="space-y-8">
+    <section class="admin-panel admin-panel-strong p-6">
+        <a href="{{ route('admin.services.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 no-underline transition hover:text-slate-700">
             &larr; Retour aux services
         </a>
-        <h1 class="text-2xl font-bold text-slate-900">Modifier : {{ $service->name }}</h1>
-    </div>
-
-    {{-- Success alert --}}
-    @if (session('status'))
-        <div class="rounded-2xl bg-green-50 border border-green-200 text-green-800 px-4 py-3 text-sm">
-            {{ session('status') }}
+        <div class="mt-4">
+            <p class="admin-kicker">Service</p>
+            <h1 class="admin-page-title">{{ $service->name }}</h1>
+            <p class="admin-page-copy">Affinage du service, du vocabulaire à employer et du type de visuels à demander à l’IA.</p>
         </div>
-    @endif
+    </section>
 
-    {{-- Validation errors --}}
     @if ($errors->any())
-        <div class="rounded-2xl bg-red-50 border border-red-200 text-red-800 px-4 py-3 text-sm">
+        <div class="admin-alert admin-alert-error">
             <ul class="list-disc list-inside space-y-1">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -31,70 +25,90 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.services.update', $service->id) }}" method="POST">
+    <form action="{{ route('admin.services.update', $service->id) }}" method="POST" class="space-y-6">
         @csrf
         @method('PUT')
 
-        <div class="rounded-[2rem] bg-white p-6 shadow-sm space-y-5">
+        <div class="admin-panel admin-panel-strong p-6 space-y-5">
+            <div class="admin-section-head">
+                <div>
+                    <h2 class="admin-section-title">Base du service</h2>
+                    <p class="admin-section-copy">Nom, catégorie et description de fond.</p>
+                </div>
+            </div>
 
-            <div>
-                <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Nom du service <span class="text-red-500">*</span></label>
-                <input type="text" id="name" name="name"
-                       value="{{ old('name', $service->name) }}"
-                       class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
-                       required>
+            <div class="grid gap-5 md:grid-cols-2">
+                <div>
+                    <label for="name" class="mb-2 block text-sm font-semibold text-slate-700">Nom du service</label>
+                    <input type="text" id="name" name="name" value="{{ old('name', $service->name) }}" required>
+                </div>
+                <div>
+                    <label for="category" class="mb-2 block text-sm font-semibold text-slate-700">Catégorie</label>
+                    <input type="text" id="category" name="category" value="{{ old('category', $service->category) }}" required>
+                </div>
             </div>
 
             <div>
-                <label for="category" class="block text-sm font-medium text-slate-700 mb-1">Catégorie <span class="text-red-500">*</span></label>
-                <input type="text" id="category" name="category"
-                       value="{{ old('category', $service->category) }}"
-                       class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
-                       required>
+                <label for="description" class="mb-2 block text-sm font-semibold text-slate-700">Description générale</label>
+                <textarea id="description" name="description" rows="4">{{ old('description', $service->description) }}</textarea>
             </div>
 
-            <div>
-                <label for="description" class="block text-sm font-medium text-slate-700 mb-1">Description</label>
-                <textarea id="description" name="description" rows="4"
-                          class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300">{{ old('description', $service->description) }}</textarea>
-            </div>
-
-            <div>
-                <label class="flex items-center gap-3 cursor-pointer">
-                    <input type="hidden" name="is_emergency" value="0">
-                    <input type="checkbox" name="is_emergency" value="1"
-                           @checked(old('is_emergency', $service->is_emergency))
-                           class="rounded border-slate-300 text-slate-900">
-                    <span class="text-sm font-medium text-slate-700">Service d'urgence</span>
-                </label>
-                <p class="mt-1 ml-6 text-xs text-slate-400">Cochez si ce service est proposé en intervention urgente.</p>
-            </div>
-
+            <label class="inline-flex items-center gap-3 text-sm font-semibold text-slate-700">
+                <input type="hidden" name="is_emergency" value="0">
+                <input type="checkbox" name="is_emergency" value="1" @checked(old('is_emergency', $service->is_emergency)) class="rounded border-slate-300 text-slate-900">
+                Service d'urgence
+            </label>
         </div>
 
-        <div class="mt-6 flex items-center justify-between">
-            <form action="{{ route('admin.services.destroy', $service->id) }}" method="POST"
-                  onsubmit="return confirm('Supprimer définitivement ce service ?')">
-                @csrf
-                @method('DELETE')
-                <button type="submit"
-                        class="rounded-2xl border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">
-                    Supprimer ce service
-                </button>
-            </form>
-
-            <div class="flex items-center gap-3">
-                <a href="{{ route('admin.services.index') }}"
-                   class="rounded-2xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                    Annuler
-                </a>
-                <button type="submit"
-                        class="rounded-2xl bg-slate-900 text-white px-6 py-2.5 text-sm font-medium hover:bg-slate-800 transition-colors">
-                    Enregistrer
-                </button>
+        <div class="admin-panel admin-panel-strong p-6 space-y-5">
+            <div class="admin-section-head">
+                <div>
+                    <h2 class="admin-section-title">Consignes IA pour ce service</h2>
+                    <p class="admin-section-copy">Ce sont ces informations qui serviront à personnaliser les pages générées pour ce service.</p>
+                </div>
             </div>
+
+            <div>
+                <label for="custom_description" class="mb-2 block text-sm font-semibold text-slate-700">Angle commercial spécifique</label>
+                <textarea id="custom_description" name="custom_description" rows="4" placeholder="Explique ici ce que tu veux vraiment mettre en avant pour ce service.">{{ old('custom_description', $websiteService?->custom_description) }}</textarea>
+            </div>
+
+            <div class="grid gap-5 md:grid-cols-2">
+                <div>
+                    <label for="custom_price" class="mb-2 block text-sm font-semibold text-slate-700">Repère tarifaire</label>
+                    <input type="text" id="custom_price" name="custom_price" value="{{ old('custom_price', $websiteService?->custom_price) }}" placeholder="Ex : à partir de 390 €">
+                </div>
+                <div>
+                    <label class="mb-2 block text-sm font-semibold text-slate-700">Statut site</label>
+                    <div class="admin-note">
+                        <span class="admin-badge {{ ($websiteService?->is_active ?? false) ? 'admin-badge-success' : 'admin-badge-muted' }}">
+                            {{ ($websiteService?->is_active ?? false) ? 'Actif sur le site' : 'Inactif sur le site' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label for="keyword_focus" class="mb-2 block text-sm font-semibold text-slate-700">Mots et formulations à utiliser</label>
+                <textarea id="keyword_focus" name="keyword_focus" rows="5" placeholder="Ex : recherche de fuite toiture, dépannage couverture, artisan couvreur local, tuiles cassées, infiltration...">{{ old('keyword_focus', $websiteService?->keyword_focus) }}</textarea>
+            </div>
+
+            <div>
+                <label for="photo_brief" class="mb-2 block text-sm font-semibold text-slate-700">Brief photo à suggérer pour ce service</label>
+                <textarea id="photo_brief" name="photo_brief" rows="5" placeholder="Ex : photos de chantier en cours, gros plan sur le savoir-faire, avant/après, équipe sur toiture sécurisée...">{{ old('photo_brief', $websiteService?->photo_brief) }}</textarea>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-end gap-3">
+            <a href="{{ route('admin.services.index') }}" class="admin-link-btn admin-btn-secondary">Annuler</a>
+            <button type="submit" class="admin-btn admin-btn-primary">Enregistrer</button>
         </div>
     </form>
 
+    <form action="{{ route('admin.services.destroy', $service->id) }}" method="POST" onsubmit="return confirm('Supprimer définitivement ce service ?')">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="admin-btn admin-btn-danger">Supprimer ce service</button>
+    </form>
 </div>
 @endsection

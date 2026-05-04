@@ -9,6 +9,7 @@ use App\Traits\HasSeo;
 use App\Traits\HasSlug;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Service extends BaseModel
 {
@@ -27,6 +28,11 @@ class Service extends BaseModel
     public function websiteServices(): HasMany
     {
         return $this->hasMany(WebsiteService::class);
+    }
+
+    public function websiteService(): HasOne
+    {
+        return $this->hasOne(WebsiteService::class);
     }
 
     public function pages(): HasMany

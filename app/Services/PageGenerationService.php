@@ -9,6 +9,7 @@ use App\Models\City;
 use App\Models\Page;
 use App\Models\Service;
 use App\Models\WeatherEvent;
+use App\Models\WebsiteService;
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Str;
@@ -30,10 +31,29 @@ class PageGenerationService implements PageGenerationServiceInterface
         return $pages;
     }
 
-    public function generateAllPagesForDepartment(string $deptCode): int
+    public function generateAllPagesForDepartment(string $deptCode, ?array $serviceIds = null): int
     {
         $cities = City::query()->active()->byDepartment($deptCode)->get();
-        $services = Service::query()->get();
+        $activeServiceIds = WebsiteService::query()
+            ->active()
+            ->pluck('service_id')
+            ->map(fn ($id): int => (int) $id)
+            ->unique()
+            ->values();
+
+        $selectedServiceIds = collect($serviceIds ?? $activeServiceIds->all())
+            ->map(fn ($id): int => (int) $id)
+            ->filter(fn (int $id): bool => $id > 0)
+            ->unique()
+            ->values();
+
+        $services = Service::query()
+            ->when(
+                $selectedServiceIds->isNotEmpty(),
+                fn ($query) => $query->whereIn('id', $selectedServiceIds->all()),
+                fn ($query) => $query->whereRaw('1 = 0')
+            )
+            ->get();
 
         $pageCount = 0;
         $jobs = [];
