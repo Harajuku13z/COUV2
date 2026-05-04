@@ -87,11 +87,11 @@ class WeatherService implements WeatherServiceInterface
         $wind    = (float) ($weather['wind_speed'] ?? 0) * 3.6;
 
         return match (true) {
-            $rain > 5  => 'Temps pluvieux prévu, pertinent pour évoquer la prévention et les infiltrations.',
-            $wind > 35 => 'Vent soutenu annoncé, contexte utile pour parler de sécurisation et de réparation.',
-            $temp < 0  => 'Gel attendu, pertinent pour mentionner isolation et protection hivernale.',
-            $temp > 32 => 'Canicule en cours, intéressant pour mettre en avant l'isolation thermique.',
-            default    => 'Conditions météo modérées, à relier à l'entretien régulier et préventif.',
+            $rain > 5  => "Temps pluvieux prévu, pertinent pour évoquer la prévention et les infiltrations.",
+            $wind > 35 => "Vent soutenu annoncé, contexte utile pour parler de sécurisation et de réparation.",
+            $temp < 0  => "Gel attendu, pertinent pour mentionner isolation et protection hivernale.",
+            $temp > 32 => "Canicule en cours, intéressant pour mettre en avant l'isolation thermique.",
+            default    => "Conditions météo modérées, à relier à l'entretien régulier et préventif.",
         };
     }
 
@@ -131,7 +131,7 @@ class WeatherService implements WeatherServiceInterface
         $risks   = [];
 
         if (($weather['rain_1h'] ?? 0) > 5 || in_array($month, [10, 11, 12, 1, 2], true)) {
-            $risks[] = 'risque d'infiltration et d'humidité';
+            $risks[] = "risque d'infiltration et d'humidité";
         }
 
         if (($weather['wind_speed'] ?? 0) > 14) {
