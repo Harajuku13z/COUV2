@@ -27,11 +27,11 @@ class ImageOptimizationService
         $mediumPath  = $directory.'/'.$baseName.'-200.png';
         $faviconPath = $directory.'/'.$baseName.'-64.png';
 
-        $source = $this->manager->read($file->getRealPath());
+        $sourcePath = $file->getRealPath();
 
-        Storage::disk('public')->put($fullPath, (string) $source->scaleDown(width: 400)->toPng());
-        Storage::disk('public')->put($mediumPath, (string) $source->scaleDown(width: 200)->toPng());
-        Storage::disk('public')->put($faviconPath, (string) $source->scaleDown(width: 64, height: 64)->toPng());
+        Storage::disk('public')->put($fullPath, (string) $this->manager->read($sourcePath)->scaleDown(width: 400)->toPng());
+        Storage::disk('public')->put($mediumPath, (string) $this->manager->read($sourcePath)->scaleDown(width: 200)->toPng());
+        Storage::disk('public')->put($faviconPath, (string) $this->manager->read($sourcePath)->scaleDown(width: 64, height: 64)->toPng());
 
         return [
             'full'    => $fullPath,
