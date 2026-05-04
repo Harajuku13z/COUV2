@@ -13,21 +13,21 @@ class AdminSetupStep extends StepComponent
     public string $admin_password = '';
     public string $admin_password_confirmation = '';
 
-    public string $mail_host = '';
-    public string $mail_port = '587';
+    public string $mail_host = 'smtp.hostinger.com';
+    public string $mail_port = '465';
     public string $mail_username = '';
     public string $mail_password = '';
-    public string $mail_encryption = 'tls';
+    public string $mail_encryption = 'ssl';
     public string $mail_from_address = '';
     public string $mail_from_name = '';
 
     public function mount(): void
     {
         $this->admin_email       = Setting::query()->where('key', 'admin_email')->value('value') ?? '';
-        $this->mail_host         = Setting::query()->where('key', 'mail_host')->value('value') ?? '';
-        $this->mail_port         = Setting::query()->where('key', 'mail_port')->value('value') ?? '587';
+        $this->mail_host         = Setting::query()->where('key', 'mail_host')->value('value') ?? 'smtp.hostinger.com';
+        $this->mail_port         = Setting::query()->where('key', 'mail_port')->value('value') ?? '465';
         $this->mail_username     = Setting::query()->where('key', 'mail_username')->value('value') ?? '';
-        $this->mail_encryption   = Setting::query()->where('key', 'mail_encryption')->value('value') ?? 'tls';
+        $this->mail_encryption   = Setting::query()->where('key', 'mail_encryption')->value('value') ?? 'ssl';
         $this->mail_from_address = Setting::query()->where('key', 'mail_from_address')->value('value') ?? '';
         $this->mail_from_name    = Setting::query()->where('key', 'mail_from_name')->value('value') ?? '';
     }

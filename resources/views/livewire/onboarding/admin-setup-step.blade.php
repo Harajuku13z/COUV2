@@ -66,19 +66,19 @@
                         <label class="form-label fw-semibold text-secondary">Serveur SMTP</label>
                         <input wire:model="mail_host"
                                class="form-control setup-form-control"
-                               placeholder="smtp.gmail.com">
+                               placeholder="smtp.hostinger.com">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label fw-semibold text-secondary">Port</label>
                         <input wire:model="mail_port"
                                class="form-control setup-form-control"
-                               placeholder="587">
+                               placeholder="465">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label fw-semibold text-secondary">Chiffrement</label>
                         <select wire:model="mail_encryption" class="form-select setup-form-select">
-                            <option value="tls">TLS</option>
                             <option value="ssl">SSL</option>
+                            <option value="tls">TLS</option>
                             <option value="">Aucun</option>
                         </select>
                     </div>
