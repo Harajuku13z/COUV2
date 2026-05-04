@@ -98,9 +98,9 @@ class ServicesSeeder extends Seeder
             ['category' => 'peinture_interieure', 'is_emergency' => false, 'name' => 'Devis peinture intérieure gratuit'],
 
             // ── PEINTRE – Extérieur ──────────────────────────────────────────
-            ['category' => 'peinture_exterieure', 'is_emergency' => false, 'name' => 'Peinture de façade'],
-            ['category' => 'peinture_exterieure', 'is_emergency' => false, 'name' => 'Ravalement de façade'],
-            ['category' => 'peinture_exterieure', 'is_emergency' => false, 'name' => 'Traitement hydrofuge de façade'],
+            ['category' => 'peinture_exterieure', 'is_emergency' => false, 'name' => 'Peinture extérieure de maison'],
+            ['category' => 'peinture_exterieure', 'is_emergency' => false, 'name' => 'Peinture de ravalement'],
+            ['category' => 'peinture_exterieure', 'is_emergency' => false, 'name' => 'Traitement hydrofuge et imperméabilisant'],
             ['category' => 'peinture_exterieure', 'is_emergency' => false, 'name' => 'Peinture de volets et portails'],
             ['category' => 'peinture_exterieure', 'is_emergency' => false, 'name' => 'Peinture de clôtures en bois'],
             ['category' => 'peinture_exterieure', 'is_emergency' => false, 'name' => 'Enduit de façade'],
