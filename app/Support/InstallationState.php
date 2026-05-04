@@ -17,7 +17,11 @@ class InstallationState
                 return false;
             }
 
-            return Setting::query()->where('key', 'setup_completed')->value('value') === '1';
+            if (Setting::query()->where('key', 'setup_completed')->value('value') !== '1') {
+                return false;
+            }
+
+            return Setting::query()->where('key', 'admin_password')->whereNotNull('value')->exists();
         } catch (Throwable) {
             return false;
         }

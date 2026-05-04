@@ -12,7 +12,7 @@ class SetupController extends Controller
     public function __invoke(InstallationState $installationState)
     {
         if ($installationState->isConfigured()) {
-            return redirect()->route('admin.dashboard');
+            return redirect('/admin');
         }
 
         if ($this->hasOnboardingTables()) {

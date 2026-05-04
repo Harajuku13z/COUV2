@@ -26,6 +26,7 @@ foreach (config('tenancy.central_domains', []) as $domain) {
                 : redirect('/onboarding');
         })->name('central.dashboard');
 
+
         Route::get('/healthz', function () {
             return response()->json([
                 'status' => 'healthy',
