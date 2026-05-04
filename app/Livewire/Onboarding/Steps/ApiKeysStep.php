@@ -44,7 +44,7 @@ class ApiKeysStep extends StepComponent
             ['value' => '1', 'group' => 'system']
         );
 
-        $this->redirectRoute('admin.dashboard');
+        $this->redirect('/admin');
     }
 
     public function render()
