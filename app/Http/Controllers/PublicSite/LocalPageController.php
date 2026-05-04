@@ -41,7 +41,9 @@ class LocalPageController extends Controller
             'description' => $page->content?->meta_description ?? $company->offer_text,
             'canonical' => $this->seoService->generateCanonicalUrl($page),
             'type' => in_array($page->page_type, ['blog', 'meteo'], true) ? 'article' : 'website',
-            'image' => $company->logo_path ? asset('storage/'.$company->logo_path) : null,
+            'image' => $page->content?->featured_image_path
+                ? asset('storage/'.$page->content->featured_image_path)
+                : ($company->logo_path ? asset('storage/'.$company->logo_path) : null),
             'robots' => $page->status === 'published' ? 'index,follow' : 'noindex,nofollow',
         ];
 

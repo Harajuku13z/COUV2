@@ -105,6 +105,11 @@
                                 </div>
                             </div>
 
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <span class="admin-pill">{{ $service->media_count ?? 0 }} photo(s) service</span>
+                                <span class="admin-pill">IA texte + meta + schema</span>
+                            </div>
+
                             <div class="mt-5 flex flex-wrap gap-3">
                                 <form action="{{ \App\Support\CentralAppUrl::admin('services/'.$service->id.'/generate-pages') }}" method="POST">
                                     @csrf

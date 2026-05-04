@@ -25,7 +25,7 @@
         </div>
     @endif
 
-    <form action="{{ \App\Support\CentralAppUrl::admin('services/'.$service->id) }}" method="POST" class="space-y-6">
+    <form action="{{ \App\Support\CentralAppUrl::admin('services/'.$service->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
         @method('PUT')
 
@@ -97,6 +97,46 @@
                 <label for="photo_brief" class="mb-2 block text-sm font-semibold text-slate-700">Brief photo à suggérer pour ce service</label>
                 <textarea id="photo_brief" name="photo_brief" rows="5" placeholder="Ex : photos de chantier en cours, gros plan sur le savoir-faire, avant/après, équipe sur toiture sécurisée...">{{ old('photo_brief', $websiteService?->photo_brief) }}</textarea>
             </div>
+        </div>
+
+        <div class="admin-panel admin-panel-strong p-6 space-y-5">
+            <div class="admin-section-head">
+                <div>
+                    <h2 class="admin-section-title">Photos du service</h2>
+                    <p class="admin-section-copy">La première photo sert de visuel de mise en avant. Les pages générées récupèrent aussi les photos des réalisations existantes.</p>
+                </div>
+            </div>
+
+            <div>
+                <label for="photos" class="mb-2 block text-sm font-semibold text-slate-700">Ajouter des photos</label>
+                <input type="file" id="photos" name="photos[]" accept="image/*" multiple>
+                <p class="mt-2 text-sm text-slate-500">Ajoute une ou plusieurs photos du service. La première sera utilisée comme image principale si disponible.</p>
+            </div>
+
+            @if($service->media->isNotEmpty())
+                <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    @foreach($service->media as $photo)
+                        <article class="rounded-[24px] border border-slate-200 bg-white p-3 shadow-sm">
+                            <img src="{{ $photo->url ?? asset('storage/'.$photo->path) }}" alt="{{ $photo->alt_text ?? $service->name }}" class="h-52 w-full rounded-[18px] object-cover" loading="lazy">
+                            <div class="mt-3 flex items-center justify-between gap-3">
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-900">{{ $loop->first ? 'Photo principale' : 'Photo service' }}</p>
+                                    <p class="text-xs uppercase tracking-[0.18em] text-slate-400">Ordre {{ $photo->sort_order }}</p>
+                                </div>
+                                <form action="{{ \App\Support\CentralAppUrl::admin('services/'.$service->id.'/photos/'.$photo->id) }}" method="POST" onsubmit="return confirm('Supprimer cette photo du service ?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="admin-btn admin-btn-danger">Retirer</button>
+                                </form>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            @else
+                <div class="admin-note">
+                    <p class="m-0 text-sm text-slate-600">Aucune photo service pour le moment. Si tu laisses vide, les pages essaieront d’utiliser les photos des réalisations correspondantes.</p>
+                </div>
+            @endif
         </div>
 
         <div class="flex flex-wrap items-center justify-end gap-3">

@@ -9,10 +9,13 @@ use App\Contracts\OpenAiServiceInterface;
 use App\Models\AiGeneration;
 use App\Models\BlogPost;
 use App\Models\Company;
+use App\Models\Media;
 use App\Models\Page;
 use App\Models\PageContent;
 use App\Models\PeopleAlsoAsk;
 use App\Models\LocalPackResult;
+use App\Models\Realization;
+use App\Models\Service;
 use App\Models\WebsiteService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -40,6 +43,9 @@ class AiContentGeneratorService implements AiContentGeneratorServiceInterface
         }
 
         $websiteService = WebsiteService::query()->where('service_id', $page->service_id)->first();
+        $service = Service::query()->with('media')->find($page->service_id);
+        $featureImage = $this->resolveFeaturedImage($service);
+        $realizationPhotos = $this->resolveRealizationPhotos($page, $service);
 
         $templates = [
             self::TEMPLATE_EXPERTISE,
@@ -90,6 +96,9 @@ class AiContentGeneratorService implements AiContentGeneratorServiceInterface
                 'sections' => $generated['sections'],
                 'faq' => $generated['faq'],
                 'photo_suggestions' => $generated['photo_suggestions'] ?? $this->defaultPhotoSuggestions($page, $websiteService),
+                'featured_image_path' => $featureImage['path'] ?? null,
+                'featured_image_alt' => $featureImage['alt'] ?? null,
+                'realization_photos' => $realizationPhotos,
                 'cta_primary' => $generated['cta_primary'],
                 'cta_secondary' => $generated['cta_secondary'] ?? 'Demander un devis',
                 'short_excerpt' => $generated['short_excerpt'] ?? Str::limit(strip_tags($generated['intro']), 180),
@@ -191,6 +200,13 @@ class AiContentGeneratorService implements AiContentGeneratorServiceInterface
 
         $nearbyCities = $page->city?->nearby_cities ?? [];
         $weatherContext = $page->city !== null ? $this->weatherService->getWeatherContext($page->city) : '';
+        $realizations = $this->matchingRealizations($page, $page->service)->map(function (Realization $realization): array {
+            return [
+                'title' => $realization->title,
+                'description' => $realization->description,
+                'city_label' => $realization->city_label,
+            ];
+        })->values()->all();
 
         return json_encode([
             'seed' => $seed,
@@ -228,6 +244,7 @@ class AiContentGeneratorService implements AiContentGeneratorServiceInterface
             ],
             'people_also_ask' => $paa,
             'competitors' => $competitors,
+            'realizations' => $realizations,
             'required_keys' => [
                 'meta_title',
                 'meta_description',
@@ -295,5 +312,99 @@ class AiContentGeneratorService implements AiContentGeneratorServiceInterface
             $existing = $content->intro.' '.collect($content->sections)->pluck('content')->implode(' ');
             return $this->openAi->similarityScore($newContent, $existing);
         })->max() ?? 0.0;
+    }
+
+    private function resolveFeaturedImage(?Service $service): ?array
+    {
+        $media = $service?->primaryMedia();
+
+        if ($media instanceof Media) {
+            return [
+                'path' => $media->path,
+                'alt' => $media->alt_text ?: ($service?->name ? $service->name.' - photo de mise en avant' : 'Photo de service'),
+                'url' => $media->url,
+            ];
+        }
+
+        $realizationPhoto = $this->matchingRealizations(null, $service)->flatMap(
+            fn (Realization $realization) => $realization->media->take(1)
+        )->first();
+
+        if ($realizationPhoto instanceof Media) {
+            return [
+                'path' => $realizationPhoto->path,
+                'alt' => $realizationPhoto->alt_text ?: ($service?->name ? $service->name.' - réalisation' : 'Photo de réalisation'),
+                'url' => $realizationPhoto->url,
+            ];
+        }
+
+        return null;
+    }
+
+    private function resolveRealizationPhotos(Page $page, ?Service $service): array
+    {
+        return $this->matchingRealizations($page, $service)
+            ->flatMap(function (Realization $realization): array {
+                return $realization->media->map(function (Media $media) use ($realization): array {
+                    return [
+                        'title' => $realization->title,
+                        'path' => $media->path,
+                        'url' => $media->url,
+                        'alt' => $media->alt_text ?: $realization->title,
+                        'city_label' => $realization->city_label,
+                    ];
+                })->all();
+            })
+            ->take(6)
+            ->values()
+            ->all();
+    }
+
+    private function matchingRealizations(?Page $page, ?Service $service): Collection
+    {
+        $serviceName = Str::lower((string) ($service?->name ?? ''));
+        $serviceCategory = Str::lower((string) ($service?->category ?? ''));
+        $cityName = Str::lower((string) ($page?->city?->name ?? ''));
+
+        $matches = Realization::query()
+            ->with('media')
+            ->whereHas('media')
+            ->orderByDesc('is_featured')
+            ->latest('completed_at')
+            ->latest('id')
+            ->get()
+            ->filter(function (Realization $realization) use ($serviceName, $serviceCategory, $cityName): bool {
+                $haystack = Str::lower(trim(implode(' ', array_filter([
+                    $realization->title,
+                    $realization->description,
+                    $realization->city_label,
+                ]))));
+
+                if ($haystack === '') {
+                    return false;
+                }
+
+                if ($serviceName !== '' && str_contains($haystack, $serviceName)) {
+                    return true;
+                }
+
+                if ($serviceCategory !== '' && str_contains($haystack, $serviceCategory)) {
+                    return true;
+                }
+
+                return $cityName !== '' && str_contains($haystack, $cityName);
+            });
+
+        if ($matches->isNotEmpty()) {
+            return $matches->values();
+        }
+
+        return Realization::query()
+            ->with('media')
+            ->whereHas('media')
+            ->featured()
+            ->latest('completed_at')
+            ->take(3)
+            ->get();
     }
 }

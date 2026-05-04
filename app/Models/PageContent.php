@@ -19,6 +19,7 @@ class PageContent extends BaseModel
             'sections' => 'array',
             'faq' => 'array',
             'photo_suggestions' => 'array',
+            'realization_photos' => 'array',
             'internal_links' => 'array',
             'schema_local_business' => 'array',
             'schema_service' => 'array',

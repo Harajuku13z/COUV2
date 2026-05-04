@@ -109,6 +109,7 @@ foreach (config('tenancy.central_domains', []) as $domain) {
             Route::get('/services/{id}/edit', [ServicesController::class, 'edit'])->name('services.edit');
             Route::put('/services/{id}', [ServicesController::class, 'update'])->name('services.update');
             Route::delete('/services/{id}', [ServicesController::class, 'destroy'])->name('services.destroy');
+            Route::delete('/services/{id}/photos/{mediaId}', [ServicesController::class, 'destroyPhoto'])->name('services.photos.destroy');
             Route::post('/services/{id}/toggle', [ServicesController::class, 'toggleActive'])->name('services.toggle');
             Route::post('/services/{id}/generate-pages', [ServicesController::class, 'generatePages'])->name('services.generate-pages');
 

@@ -3,6 +3,10 @@
 @section('content')
 <section class="mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-[1fr_360px]">
     <div>
+        @if($page->content?->featured_image_path)
+            <img src="{{ asset('storage/'.$page->content->featured_image_path) }}" alt="{{ $page->content->featured_image_alt ?: ($page->content->h1 ?? $page->slug) }}" class="mb-8 h-[360px] w-full rounded-[2rem] object-cover" loading="eager">
+        @endif
+
         <h1 class="mt-4 text-4xl font-semibold" style="font-family: var(--font-heading)">{{ $page->content->h1 ?? $page->slug }}</h1>
         <p class="mt-6 text-lg text-slate-700">{{ $page->content->intro ?? '' }}</p>
 
@@ -22,6 +26,24 @@
                             <summary class="cursor-pointer font-medium">{{ $faq['question'] ?? 'Question' }}</summary>
                             <p class="mt-3 text-sm text-slate-600">{{ $faq['answer'] ?? '' }}</p>
                         </details>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
+        @if(!empty($page->content?->realization_photos))
+            <section class="mt-12">
+                <h2 class="text-2xl font-semibold">Photos de réalisations</h2>
+                <div class="mt-6 grid gap-4 md:grid-cols-2">
+                    @foreach($page->content->realization_photos as $photo)
+                        <figure class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
+                            <img src="{{ $photo['url'] ?? asset('storage/'.($photo['path'] ?? '')) }}" alt="{{ $photo['alt'] ?? ($page->content->h1 ?? 'Photo réalisation') }}" class="h-64 w-full object-cover" loading="lazy">
+                            @if(!empty($photo['title']) || !empty($photo['city_label']))
+                                <figcaption class="p-4 text-sm text-slate-600">
+                                    {{ $photo['title'] ?? 'Réalisation' }}@if(!empty($photo['city_label'])) · {{ $photo['city_label'] }}@endif
+                                </figcaption>
+                            @endif
+                        </figure>
                     @endforeach
                 </div>
             </section>
