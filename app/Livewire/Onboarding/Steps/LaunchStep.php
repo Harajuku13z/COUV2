@@ -15,6 +15,11 @@ class LaunchStep extends StepComponent
 {
     public function launch()
     {
+        Setting::query()->updateOrCreate(
+            ['key' => 'setup_completed'],
+            ['value' => '1', 'group' => 'system']
+        );
+
         foreach ($this->getDepartmentCodes() as $departmentCode) {
             GenerateAllPagesForDepartmentJob::dispatch($departmentCode);
         }

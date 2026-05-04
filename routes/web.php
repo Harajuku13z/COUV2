@@ -28,7 +28,7 @@ foreach (config('tenancy.central_domains', []) as $domain) {
 
         Route::get('/onboarding', SetupController::class)->name('onboarding');
 
-        Route::prefix('admin')->as('admin.')->group(function (): void {
+        Route::prefix('admin')->as('admin.')->middleware(\App\Http\Middleware\RequiresSetup::class)->group(function (): void {
             Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
             Route::post('/dashboard/sitemap', [DashboardController::class, 'regenerateSitemap'])->name('dashboard.sitemap');
             Route::post('/dashboard/weather', [DashboardController::class, 'refreshWeather'])->name('dashboard.weather');
