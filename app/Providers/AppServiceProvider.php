@@ -20,6 +20,7 @@ use App\Services\PageGenerationService;
 use App\Services\SeoService;
 use App\Services\SerpApiService;
 use App\Services\WeatherService;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -45,6 +46,22 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        if (app()->runningInConsole()) {
+            return;
+        }
+
+        $currentHost = request()->getHost();
+        $centralDomains = collect(config('tenancy.central_domains', []))
+            ->filter(fn ($domain): bool => is_string($domain) && trim($domain) !== '')
+            ->map(fn (string $domain): string => trim($domain))
+            ->values();
+
+        if ($centralDomains->contains($currentHost)) {
+            URL::forceRootUrl(rtrim((string) config('app.url'), '/'));
+            URL::forceScheme(parse_url((string) config('app.url'), PHP_URL_SCHEME) ?: 'https');
+            return;
+        }
+
+        URL::forceRootUrl(request()->getSchemeAndHttpHost());
     }
 }
